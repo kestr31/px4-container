@@ -1,7 +1,8 @@
 import sys
 import rclpy
 from rclpy.node import Node
-
+from rclpy.qos import ReliabilityPolicy, QoSProfile, LivelinessPolicy, DurabilityPolicy, HistoryPolicy
+from rclpy.qos_event import SubscriptionEventCallbacks
 from pytictoc import TicToc
 
 # PX4 MSG Subscriber
@@ -50,7 +51,7 @@ import math
 from .CollisionAvoidance.ArtificialPotentialField import ArtificialPotentialField
 
 # JBNU Collision Avoidance
-from .CollisionAvoidance.JBNU import JBNU_Obs
+#from .CollisionAvoidance.JBNU import JBNU_Obs
 
 ## Path Planning Module
 #  RRT
@@ -73,12 +74,13 @@ class IntegrationNode(Node):
     def __init__(self):
         super().__init__('integration')
         self.t = TicToc()
+        self.t2 = TicToc()
         # Init PathPlanning Module
         self.RRT = RRT.RRT()
         self.SAC = SACOnnx.SACOnnx()
 
-        # Init JBNU CA Module
-        self.JBNU = JBNU_Obs.JBNU_Collision()
+        # # Init JBNU CA Module
+        #self.JBNU = JBNU_Obs.JBNU_Collision()
 
         # Init CVBridge
         self.CvBridge = CvBridge()
@@ -98,11 +100,14 @@ class IntegrationNode(Node):
         self.EstimatorStatesSubscriber_ = self.create_subscription(EstimatorStates, '/fmu/estimator_states/out', self.EstimatorStatesCallback, 10)
         self.VehicleAngularVelocitySubscriber_ = self.create_subscription(VehicleAngularVelocity, '/fmu/vehicle_angular_velocity/out', self.VehicleAngularVelocityCallback, 10)
 
-        # Init Camera Subscriber
-        self.CameraSubscriber_ = self.create_subscription(Image, '/realsense_d455_RGB/image', self.CameraCallback, 60)
+        # Init RGB Camera Subscriber
+        self.RGBCameraSubscriber_ = self.create_subscription(Image, '/realsense_d455_depth/realsense_d455_depth/image_raw', self.RGBCameraCallback, QoSProfile(depth=30, reliability=ReliabilityPolicy.BEST_EFFORT))
+        
+        # Init Depth Camera Subscriber
+        self.DepthCameraSubscriber_ = self.create_subscription(Image, '/realsense_d455_depth/realsense_d455_depth/depth/image_raw', self.DepthCameraCallback, QoSProfile(depth=30, reliability=ReliabilityPolicy.BEST_EFFORT))
 
         # Init Lidar Subscriber
-        self.LidarSubscriber_ = self.create_subscription(LaserScan, '/rplidar_a3/laserscan', self.LidarCallback, 10)
+        self.LidarSubscriber_ = self.create_subscription(LaserScan, '/rplidar_a3/laserscan', self.LidarCallback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
 
         # Init Client
         self.ResetWorldClient = self.create_client(Empty, '/reset_world')
@@ -225,9 +230,9 @@ class IntegrationNode(Node):
         self.Flag_UseMPPI           =   1   # 0, 1     | baseline guidance law only | guid. law with MPPI algorithm |
         self.Flag_UseGPR            =   1   # 0, 1     | don't use GPR | use GPR with MPPI algorithm |
 
-        self.Flag_PrintPFtime       =   0   # 0, 1
-        self.Flag_PrintMPPItime     =   0   # 0, 1        
-        self.Flag_PrintLimitCount   =   500        
+        self.Flag_PrintPFtime       =   1   # 0, 1
+        self.Flag_PrintMPPItime     =   1   # 0, 1        
+        self.Flag_PrintLimitCount   =   1000        
 
     #.. temp vars
         self.PFmoduleCount  =   0
@@ -316,15 +321,15 @@ class IntegrationNode(Node):
 
     #.. KAIST PathFollowing Module - NDO, PF, CMD Update Callback
         self.MPPI   =   MPPI()
-        MPPIPeriod          =   self.MPPI.MPPIParams.dt_MPPI
+        PFPeriod          =   0.004
         if self.Flag_UseMPPI == 1:
-            self.PFTimer      =   self.create_timer(MPPIPeriod, self.KAIST_PF_Module_Update)
+            self.PFTimer      =   self.create_timer(PFPeriod, self.KAIST_PF_Module_Update)
             
     ########################  End  - KAIST ##############################
     ######################################################################################################################################## 
     # Main Function
     def OffboardControl(self):
-        self.JBNU.main()
+        # self.JBNU.main()
         
         if self.PathPlanningInitialize == True:
             
@@ -356,7 +361,6 @@ class IntegrationNode(Node):
 
                     if self.KAIST_PF_PositionCommandFlag == True:
                         self.SetPosition(self.TargetPosition, self.TargetYaw)
-                        print("pos")
 
                     if self.KAIST_PF_AttitudeCommandFlag == True:
                         self.SetAttitude(self.TargetAttitude, self.TargetBodyRate, self.TargetThrust, self.TargetYawRate)
@@ -411,7 +415,6 @@ class IntegrationNode(Node):
     ## MPPI_CallBack
     def KAIST_MPPI_CallBack(self):
         if self.InitialPositionFlag and self.PFmoduleCount > 50:
-            self.t.tic()
             if self.MPPI.MPPIParams.count % self.MPPI.MPPIParams.UpdateCycle == 0:
                 if self.Flag_UseGPR == 1:
                     self.MPPI.MPPIParams.est_delAccn    =   self.GPR.yPred
@@ -472,14 +475,14 @@ class IntegrationNode(Node):
             self.PF.GCUParams.reachDist             =   self.PF.GCUParams.lookAheadDist
 
             self.MPPI.MPPIParams.count = self.MPPI.MPPIParams.count + 1
-            self.t.toc()
-            
             
         pass
 
     ## GPR_Update_CallBack
     def KAIST_GPR_Update_CallBack(self):
         if self.InitialPositionFlag and self.OffboardCount > 0:
+            self.t2.tic()
+            print("GPR")
             
             x_new   =   self.PF.GCUTime
             Y_new   =   self.NDO.outNDO
@@ -494,11 +497,10 @@ class IntegrationNode(Node):
                 self.GPR.GPR_update()
 
             self.GPR.count = self.GPR.count + 1
-            
+            self.t2.toc()
         pass
 ########################  End  - KAIST ##############################     
 
-    
     # MakeWorld
     def MakeWorldCallback(self, request, response):
         if request.done == 1:
@@ -558,8 +560,11 @@ class IntegrationNode(Node):
         return ThrustCmd, AttCmd, tgPos, LOSazim
 
     def KAIST_Command_Update(self, ThrustCmd, AttCmd, tgPos, LOSazim):
+        self.t.tic()
         if self.Flag_PrintPFtime == 1 and self.PFmoduleCount < self.Flag_PrintLimitCount:
-            print("PF call. time :", round(self.PF.GCUTime, 6), ", PFmoduleCount :", self.PFmoduleCount)
+            print("PF")
+            #print("PF call. time :", round(self.PF.GCUTime, 6), ", PFmoduleCount :", self.PFmoduleCount)
+            
         self.PFmoduleCount = self.PFmoduleCount + 1
 
         #.. Set Position
@@ -574,6 +579,8 @@ class IntegrationNode(Node):
             self.KAIST_PF_AttitudeCommandFlag = True
             self.TargetAttitude =   np.array([w, x, y, z])
             self.TargetThrust   =   ThrustCmd
+
+        self.t.toc()
 
     ## Vehicle Mode
     # Arming
@@ -753,13 +760,20 @@ class IntegrationNode(Node):
         self.UnpauseClient.call_async(self.UnpauseClientRequest)
 
     ## Gazebo Sensor Plugin
-    # Camera
-    def CameraCallback(self, msg):
+    # RGB Camera
+    def RGBCameraCallback(self, msg):
         current_frame = self.CvBridge.imgmsg_to_cv2(msg)
         current_frame = cv2.cvtColor(current_frame, cv2.COLOR_BGR2RGB)
-        cv2.imshow("camera", current_frame)
+        cv2.imshow("rgb_camera", current_frame)
         cv2.waitKey(1)
-        self.JBNU.CA(current_frame)
+        # self.JBNU.CA(current_frame)
+    
+    # Depth Camera
+    def DepthCameraCallback(self, msg):
+        current_frame = self.CvBridge.imgmsg_to_cv2(msg)
+        cv2.imshow("depth_camera", current_frame)
+        cv2.waitKey(1)
+        # self.JBNU.CA(current_frame)
 
     # Lidar
     def LidarCallback(self, msg):

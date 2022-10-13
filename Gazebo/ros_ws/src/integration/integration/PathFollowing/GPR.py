@@ -13,10 +13,10 @@ class GPR():
         self.Update_per_Estimation  =   3
 
         self.dt_Est         =   0.08
-        self.dt_GPR         =   self.dt_Est / 4
+        self.dt_GPR         =   0.04
         self.EstimateCycle  =   ceil(self.dt_Est * self.Estimation_per_dtMPPI / self.dt_GPR)
         self.UpdateCycle    =   ceil(self.dt_Est * self.Estimation_per_dtMPPI * self.Update_per_Estimation / self.dt_GPR)
-        self.N          =   50
+        self.N          =   30
 
         ## GPR vars
         self.GPRfullFLAG = 0
@@ -41,7 +41,7 @@ class GPR():
 
     def GPRparams_from_MPPIparams(self, dt_MPPI, MPPIcycle_per_MPPIdt, N_MPPI):
         self.dt_Est         =   dt_MPPI
-        self.dt_GPR         =   self.dt_Est / 4
+        # self.dt_GPR         =   self.dt_Est / 4
         self.Estimation_per_dtMPPI  =   MPPIcycle_per_MPPIdt
         self.EstimateCycle  =   ceil(self.dt_Est * self.Estimation_per_dtMPPI / self.dt_GPR)
         self.UpdateCycle    =   ceil(self.dt_Est * self.Estimation_per_dtMPPI * self.Update_per_Estimation / self.dt_GPR)

@@ -16,7 +16,7 @@ class DataMPPI():
         self.count          =   0
 
         # parameters - dt 0.08        -   more calculation & performance
-        self.N              =   50
+        self.N              =   30
         self.dt_MPPI        =   80. / 1000.
 
         # # parameters - dt 0.16          -   less calculation & performance
