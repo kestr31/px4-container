@@ -3,6 +3,8 @@ ARG BASETAG
 
 FROM ${BASEIMAGE}:${BASETAG} as stage_apt
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 ENV \
     DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
@@ -44,17 +46,18 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 COPY Gazebo/gazebo_ros /root/gazebo_ros
 COPY Gazebo/ros_ws /root/ros_ws
 
-
 RUN \
-	source "/opt/ros/galactic/setup.bash" \
-	colcon build \
+	source /opt/ros/galactic/setup.bash \
+	&& colcon build \
 		--build-base ~/ros_ws/build \
 		--install-base ~/ros_ws/install \
 		--base-paths ~/ros_ws/src \
+		--symlink-install \
 	&& colcon build \
 		--build-base ~/gazebo_ros/build \
 		--install-base ~/gazebo_ros/install \
-		--base-paths ~/gazebo_ros/src
+		--base-paths ~/gazebo_ros/src \
+		--symlink-install
 		
 
 FROM stage_deps as stage_px4sitl
@@ -63,9 +66,10 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 COPY Gazebo/models /root/PX4-Autopilot/Tools/sitl_gazebo/models
 COPY Gazebo/worlds /root/PX4-Autopilot/Tools/sitl_gazebo/worlds
+COPY Gazebo/plugins /root/PX4-Autopilot/Tools/sitl_gazebo
 
 RUN \
-	make -C /root/PX4-Autopilot px4_sitl_rtps
+	HEADLESS=1 make -C /root/PX4-Autopilot px4_sitl_rtps gazebo_typhoon_inha__grass
 
 
 FROM stage_deps as stage_final
@@ -88,7 +92,38 @@ COPY --from=stage_rnode /root/ros_ws /root/ros_ws
 COPY --from=stage_px4sitl /root/PX4-Autopilot /root/PX4-Autopilot
 
 RUN \
-	ln -s /root/PX4-Autopilot/Tools/sitl_gazebo/models/ models
+    --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
+    --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
+        sh -c "$(wget -O - https://github.com/deluan/zsh-in-docker/releases/download/v1.1.2/zsh-in-docker.sh | sed "77d;s/export TERM=xterm/export TERM=xterm-256color/g")" -- \
+        -t agnoster \
+        -p git \
+		-p https://github.com/zsh-users/zsh-autosuggestions \                                                                                                                                     -p https://github.com/zsh-users/zsh-autosuggestions \
+        -p https://github.com/zsh-users/zsh-syntax-highlighting \
+        && echo "alias cat='batcat --paging=never'" >> /root/.zshrc \
+	&& sed -i "s/#Port 22/Port 1022/g" \
+		/etc/ssh/sshd_config \
+	&& sed -i "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" \
+		/etc/ssh/sshd_config \
+	&& sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" \
+		/etc/ssh/sshd_config \
+	&& sed -i "s/\${GAZEBO_PLUGIN_PATH}/\/root\/PX4-Autopilot\/build\/px4_sitl_rtps\/build_gazebo/g" \
+		/usr/share/gazebo-11/setup.sh \
+	&& sed -i "s/\${GAZEBO_MODEL_PATH}/\/root\/PX4-Autopilot\/Tools\/sitl_gazebo\/models/g" \
+		/usr/share/gazebo-11/setup.sh \
+	&& ln -s /root/PX4-Autopilot/Tools/sitl_gazebo/models /root/models
+
+RUN \
+	echo "source /usr/share/gazebo-11/setup.sh" >> /root/.bashrc \
+	&& echo "source /root/px4_ros/install/setup.bash" >> /root/.bashrc \
+	&& echo "source /root/ros_ws/install/setup.bash" >> /root/.basrhc \
+    && echo "source /root/gazebo_ros/install/setup.bash" >> /root/.bashrc
+
+RUN \
+	echo "source /usr/share/gazebo-11/setup.sh" >> /root/.zshrc \
+	&& echo "source /root/px4_ros/install/setup.zsh" >> /root/.zshrc \
+	&& echo "source /root/ros_ws/install/setup.zsh" >> /root/.zshrc \
+	&& echo "source /root/gazebo_ros/install/setup.zsh" >> /root/.zshrc
 
 WORKDIR /root
 

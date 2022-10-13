@@ -35,6 +35,7 @@ python3-rosdep
 python-setuptools
 rsync
 shellcheck
+systemd
 tzdata
 unzip
 valgrind
@@ -56,4 +57,3 @@ ros-galactic-ros2bag
 ros-galactic-rmw-fastrtps-cpp
 ros-galactic-rmw-cyclonedds-cpp
 ros-galactic-rosidl-generator-dds-idl
-python3-colcon-common-extensions

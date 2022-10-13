@@ -10,10 +10,8 @@ ENV \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 
-COPY /scripts/sources.list /etc/apt/sources.list
-
 RUN \
-    rm -f /etc/apt/apt.conf.d/docker-clean \
+    rm -rf /etc/apt/apt.conf.d/docker-clean \
 	&& echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
 	&& apt-get update
 
@@ -38,7 +36,6 @@ ENV \
     LC_ALL=C.UTF-8 \
     ROS_DISTRO=galactic
 
-COPY /scripts/sources.list /etc/apt/sources.list
 COPY Base/aptdeps.txt /tmp/aptdeps.txt
 
 RUN \
@@ -140,7 +137,7 @@ ENV PATH=/root/.local/bin:$PATH
 RUN \
     echo source "/opt/ros/galactic/setup.bash" >> /root/.bashrc \
     && echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> /root/.bashrc \
-    && echo "export _colcon_cd_root=~/ros2_install" >> /root/.bashrcec
+    && echo "export _colcon_cd_root=~/ros2_install" >> /root/.bashrc
 
 # setup colcon mixin and metadata
 RUN \
@@ -156,8 +153,8 @@ FROM stage_mid as stage_px4
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN git clone -b v1.13.0 https://github.com/PX4/PX4-Autopilot.git ~/PX4-Autopilot \ 
-	&& cd ~/PX4-Autopilot \
+RUN git clone -b v1.13.0 https://github.com/PX4/PX4-Autopilot.git /root/PX4-Autopilot \ 
+	&& cd /root/PX4-Autopilot \
 	&& git submodule update --init --recursive
 
 COPY PX4-Autopilot /root/PX4-Autopilot
@@ -187,13 +184,26 @@ RUN \
         --event-handlers console_direct+
 
 
+FROM stage_mid as stage_mavr
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN git clone https://github.com/mavlink-router/mavlink-router.git /root/mavlink-router \
+    && cd /root/mavlink-router \
+    && git submodule update --init --recursive \
+    && meson setup build . \
+    && ninja -C build
+
+
 FROM stage_mid as stage_final
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 COPY --from=stage_px4 /root/PX4-Autopilot /root/PX4-Autopilot
 COPY --from=stage_px4 /root/px4_ros /root/px4_ros
-
+COPY --from=stage_mavr /root/mavlink-router/build/src/mavlink-routerd /usr/bin/mavlink-routerd
+COPY --from=stage_mavr /root/mavlink-router/build/mavlink-router.service /usr/lib/systemd/system/mavlink-router.service
+ 
 RUN \
   useradd --shell /bin/bash -u 1001 -c "" -m user \
 	&& usermod -a -G dialout user

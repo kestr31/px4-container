@@ -1,16 +1,33 @@
 import cv2
 import numpy as np
 from random import *
+<<<<<<< HEAD
 from tensorflow.keras.models import load_model
+=======
+#import airsim
+# from tensorflow.keras.models import load_model
+>>>>>>> 300e78317b258584294007e6d5df853cf1e37cea
 import onnx
 import onnxruntime as rt
 
 class JBNU_Collision():
     def __init__(self):
+<<<<<<< HEAD
         model_pretrained = onnx.load("/root/ros_ws/src/integration/integration/CollisionAvoidance/JBNU/feedforward.onnx")
         self.sess = rt.InferenceSession(model_pretrained, providers=rt.get_available_providers())
         self.output_name = self.sess.get_outputs()[0].name
         self.input_name = self.sess.get_inputs()[0].name
+=======
+        # AIRSIM DEPENDENT CODES: WILL BE REMOVED
+        #self.client = airsim.CarClient()
+        #self.client.confirmConnection()
+        
+        #self.model_pretrained = load_model('/root/ros_ws/src/integration/integration/CollisionAvoidance/JBNU/Best_feed_forward.h5')
+        model_pretrained = onnx.load('/root/ros_ws/src/integration/integration/CollisionAvoidance/JBNU/feedforward.onnx')
+        onnx.checker.check_model(model_pretrained)
+        sess = rt.InferenceSession(model_pretrained.SerializeToString(),providers=rt.get_available_providers())
+
+>>>>>>> 300e78317b258584294007e6d5df853cf1e37cea
 
     def main(self, Image):
         img2d = Image
