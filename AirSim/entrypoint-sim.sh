@@ -35,11 +35,6 @@ if [ -n $PX4_SIM_HOST_ADDR ]; then
 	find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/airsim.MultirotorClient()/airsim.MultirotorClient(ip=\"${PX4_SIM_HOST_ADDR}\", port=41451)/g"
 fi
 
-# if ${WSL}; then
-# 	find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/airsim.VehicleClient()/airsim.VehicleClient(ip = str(os.environ\['simhost']), port=41451)/g"
-# 	#find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/ip = str(os.environ\['simhost']), port=41451//g" for reverse
-# fi
-
 su -c "/home/user/ForestDeploy/ForestDeploy.sh -windowed" user &
 sleep 3s
 
