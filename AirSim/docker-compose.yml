@@ -27,7 +27,7 @@ services:
       px4-sitl-airsim:
         ipv4_address: 172.19.0.5
     container_name: sitl-airsim
-    image: kestr3l/px4:airsim-gpu-0.0.2
+    image: kestr3l/px4:airsim-gpu-0.0.3
     # stdin_open: true
     # tty: true
     deploy:
@@ -52,7 +52,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       # - $HOME/gitcodes/px4-container/scripts/buildRos2Pkg.sh:/root/tools/buildRos2Pkg.sh
-      # - $HOME/gitcodes/px4-container/AirSim/ros_ws:/root/ros_ws
+      # - $HOME/gitcodes/px4-container/AirSim/ros_ws/src:/root/ros_ws/src
       - $HOME/gitcodes/px4-container/AirSim/entrypoint-px4.sh:/usr/local/bin/entrypoint.sh
       - shared-image:/root/shared
       #- /mnt/wslg:/mnt/wslg
@@ -64,7 +64,7 @@ services:
       px4-sitl-airsim:
         ipv4_address: 172.19.0.6
     container_name: sitl-px4
-    image: kestr3l/px4:airsim-gpu-0.0.2
+    image: kestr3l/px4:airsim-gpu-0.0.3
     # stdin_open: true
     # tty: true
     deploy:
