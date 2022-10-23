@@ -161,24 +161,24 @@ class IntegrationNode(Node):
         self.InitialPosition = [ 0.0, 0.0, -5.0]
         self.InitialPositionFlag = False
 
-        self.StartPoint = np.array([[100], [100]])
-        self.GoalPoint = np.array([[4900], [4900]])
+        self.StartPoint = np.array([[40], [40]])
+        self.GoalPoint = np.array([[1960], [1960]])
         
         self.RawImage = (cv2.imread("/root/ros_ws/src/integration/integration/PathPlanning/Map/Map.png", cv2.IMREAD_GRAYSCALE))
         self.Image = np.uint8(np.uint8((255 - self.RawImage)/ 255))
         self.Image = cv2.flip(self.Image, 0)
         # self.Image = cv2.rotate(self.Image, cv2.ROTATE_90_CLOCKWISE)
         self.Planned = self.RRT.PathPlanning(self.Image, self.StartPoint, self.GoalPoint)
-        self.PlannedX = (self.Planned[0] / 10)
-        self.PlannedY = (self.Planned[1] / 10)
+        self.PlannedX = (self.Planned[0] / 4)
+        self.PlannedY = (self.Planned[1] / 4)
         self.MaxPlannnedIndex = len(self.PlannedX) - 1
         print(len(self.PlannedX))
         self.PathPlanningInitialize = True
 
         # Plot Generated Path on Plot
         self.bgd = plt.imread("/root/ros_ws/src/integration/integration/PathPlanning/Map/Map.png")
-        plt.imshow(self.bgd,zorder=0, extent=[0, 5000, 0, 5000])
-        plt.plot(self.PlannedX*10,self.PlannedY*10)
+        plt.imshow(self.bgd,zorder=0, extent=[0, 2000, 0, 2000])
+        plt.plot(self.PlannedX*4,self.PlannedY*4)
         plt.savefig('/root/ros_ws/src/integration/integration/PathPlanning/Map/Path.png')
 
         self.PlannedX = self.PlannedX - 10
