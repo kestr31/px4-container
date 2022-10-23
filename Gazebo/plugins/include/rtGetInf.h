@@ -3,7 +3,7 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * File: dryden_code_gen_types.h
+ * File: rtGetInf.h
  *
  * Code generated for Simulink model 'dryden_code_gen'.
  *
@@ -17,15 +17,16 @@
  * Validation result: Not run
  */
 
-#ifndef RTW_HEADER_dryden_code_gen_types_h_
-#define RTW_HEADER_dryden_code_gen_types_h_
+#ifndef RTW_HEADER_rtGetInf_h_
+#define RTW_HEADER_rtGetInf_h_
+#include "rtwtypes.h"
 
-/* Model Code Variants */
+extern real_T rtGetInf(void);
+extern real32_T rtGetInfF(void);
+extern real_T rtGetMinusInf(void);
+extern real32_T rtGetMinusInfF(void);
 
-/* Forward declaration for rtModel */
-typedef struct tag_RTM_dryden_code_gen_T RT_MODEL_dryden_code_gen_T;
-
-#endif                                 /* RTW_HEADER_dryden_code_gen_types_h_ */
+#endif                                 /* RTW_HEADER_rtGetInf_h_ */
 
 /*
  * File trailer for generated code.

@@ -51,11 +51,7 @@ import math
 from .CollisionAvoidance.ArtificialPotentialField import ArtificialPotentialField
 
 # JBNU Collision Avoidance
-<<<<<<< HEAD
 #from .CollisionAvoidance.JBNU import JBNU_Obs
-=======
-# from .CollisionAvoidance.JBNU import JBNU_Obs
->>>>>>> 300e78317b258584294007e6d5df853cf1e37cea
 
 ## Path Planning Module
 #  RRT
@@ -84,11 +80,7 @@ class IntegrationNode(Node):
         self.SAC = SACOnnx.SACOnnx()
 
         # # Init JBNU CA Module
-<<<<<<< HEAD
         #self.JBNU = JBNU_Obs.JBNU_Collision()
-=======
-        # self.JBNU = JBNU_Obs.JBNU_Collision()
->>>>>>> 300e78317b258584294007e6d5df853cf1e37cea
 
         # Init CVBridge
         self.CvBridge = CvBridge()
@@ -108,16 +100,11 @@ class IntegrationNode(Node):
         self.EstimatorStatesSubscriber_ = self.create_subscription(EstimatorStates, '/fmu/estimator_states/out', self.EstimatorStatesCallback, 10)
         self.VehicleAngularVelocitySubscriber_ = self.create_subscription(VehicleAngularVelocity, '/fmu/vehicle_angular_velocity/out', self.VehicleAngularVelocityCallback, 10)
 
-<<<<<<< HEAD
         # Init RGB Camera Subscriber
         self.RGBCameraSubscriber_ = self.create_subscription(Image, '/realsense_d455_depth/realsense_d455_depth/image_raw', self.RGBCameraCallback, QoSProfile(depth=30, reliability=ReliabilityPolicy.BEST_EFFORT))
         
         # Init Depth Camera Subscriber
         self.DepthCameraSubscriber_ = self.create_subscription(Image, '/realsense_d455_depth/realsense_d455_depth/depth/image_raw', self.DepthCameraCallback, QoSProfile(depth=30, reliability=ReliabilityPolicy.BEST_EFFORT))
-=======
-        # Init Camera Subscriber
-        self.CameraSubscriber_ = self.create_subscription(Image, '/realsense_d455_RGB/image', self.CameraCallback, QoSProfile(depth=30, reliability=ReliabilityPolicy.BEST_EFFORT))
->>>>>>> 300e78317b258584294007e6d5df853cf1e37cea
 
         # Init Lidar Subscriber
         self.LidarSubscriber_ = self.create_subscription(LaserScan, '/rplidar_a3/laserscan', self.LidarCallback, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))

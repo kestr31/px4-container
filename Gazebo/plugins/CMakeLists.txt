@@ -374,7 +374,13 @@ add_library(gazebo_parachute_plugin SHARED src/gazebo_parachute_plugin.cpp)
 add_library(gazebo_airship_dynamics_plugin SHARED src/gazebo_airship_dynamics_plugin.cpp)
 add_library(gazebo_drop_plugin SHARED src/gazebo_drop_plugin.cpp)
 # add dryden
+<<<<<<< HEAD
+add_library(gazebo_dryden_plugin SHARED src/gazebo_dryden_plugin.cpp src/dryden_code_gen.c src/dryden_code_gen_data.c src/rtGetNaN.c src/rtGetInf.c src/rt_nonfinite.c)
+
+
+=======
 add_library(gazebo_dryden_plugin SHARED src/gazebo_dryden_plugin.cpp src/dryden_code_gen.c src/dryden_code_gen_data.c)
+>>>>>>> 300e78317b258584294007e6d5df853cf1e37cea
 
 set(plugins
   gazebo_airspeed_plugin
