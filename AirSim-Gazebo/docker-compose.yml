@@ -3,33 +3,46 @@ services:
   airsim:
     privileged: true
     environment:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
       - DISPLAY=$DISPLAY
       - WAYLAND_DISPLAY=$WAYLAND_DISPLAY
       - QT_NO_MITSHM=1 
       - XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR
-      # - NVIDIA_DISABLE_REQUIRE=1
+      - NVIDIA_DISABLE_REQUIRE=1
       - NVIDIA_DRIVER_CAPABILITIES=all
+      # --------SET FOR DEVELOPMENT OR DEBUGGING---------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      # - REBUILD=true
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       #- LD_LIBRARY_PATH=/usr/lib/wsl/lib
     volumes:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
       - /tmp/.X11-unix:/tmp/.X11-unix
       - /usr/share/vulkan/icd.d/nvidia_icd.json:/etc/vulkan/icd.d/nvidia_icd.json
       - /usr/share/vulkan/implicit_layer.d/nvidia_layers.json:/etc/vulkan/implicit_layer.d/nvidia_layers.json
       - /usr/share/glvnd/egl_vendor.d/10_nvidia.json:/usr/share/glvnd/egl_vendor.d/10_nvidia.json
-      - /home/a4vai/gitcodes/px4-container/AirSim-Gazebo/models/AirSim/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
-      - /home/a4vai/gitcodes/px4-container/AirSim-Gazebo/entrypoint-sim.sh:/usr/local/bin/entrypoint.sh
       - shared-image:/root/shared
+      # --------SET FOR DEVELOPMENT OR DEBUGGING---------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/models/AirSim/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
+      # - ${HOME}/gitcodes/px4-container/AirSim/models/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
+      - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-sim.sh:/usr/local/bin/entrypoint.sh
+      # - ${HOME}/gitcodes/px4-container/AirSim/python/moveUAV.py:/root/AirSim/python/moveUAV.py
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       #- /mnt/wslg:/mnt/wslg
       #- /usr/lib/wsl:/usr/lib/wsl
     devices:
+      # -----COMMENT OUT IF YOU EXPERIENCE OCI ERROR-----
       - /dev/dri:/dev/dri
-      #- /dev/dxg:/dev/dxg
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - /dev/dxg:/dev/dxg
     networks:
       px4-sitl-as-gz:
         ipv4_address: 172.21.0.5
-    container_name: sitl-as-gz
+    container_name: sitl-as
     image: kestr3l/px4:airsimg-gpu-0.0.3
-    # stdin_open: true
-    # tty: true
     deploy:
       resources:
         reservations:
@@ -40,36 +53,51 @@ services:
   px4:
     privileged: true
     environment:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
       - DISPLAY=$DISPLAY
       - WAYLAND_DISPLAY=$WAYLAND_DISPLAY
       - QT_NO_MITSHM=1 
       - XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR
-      - build_path=/root/PX4-Autopilot/build/px4_sitl_rtps
-      - sitl_gazebo_path=/root/PX4-Autopilot/Tools/sitl_gazebo
-      - PX4_SIM_HOST_ADDR=172.21.0.6
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - LD_LIBRARY_PATH=/usr/lib/wsl/lib
+      # ----------SET ITE SIMULTAION PARAMETERS----------
+      #  ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      - PX4_SIM_HOST_ADDR=172.21.0.5
       - PX4_SIM_MODEL=typhoon_inha
       - PX4_SIM_WOLRLD=grass
-      # - REBUILD=true
-      #- LD_LIBRARY_PATH=/usr/lib/wsl/lib
+      - NO_PXH=1
+      # --------SET FOR DEVELOPMENT OR DEBUGGING---------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      # - HEADLESS=1
+      # - DEBUG_ENTRYPOINT=1
+      # - PX4_SITL_DEBUGGER=ide
+      # - REBUILD_RPKG_INTEGRATION=1
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
     volumes:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
       - /tmp/.X11-unix:/tmp/.X11-unix
-      # - /home/a4vai/gitcodes/px4-container/AirSim-Gazebo/ros2/src:/root/AirSim/ros2/src
-      # - $HOME/gitcodes/px4-container/scripts/buildRos2Pkg.sh:/root/tools/buildRos2Pkg.sh
-      # - $HOME/gitcodes/px4-container/AirSim/ros_ws:/root/ros_ws
-      - /home/a4vai/gitcodes/px4-container/AirSim-Gazebo/entrypoint-px4.sh:/usr/local/bin/entrypoint.sh
       - shared-image:/root/shared
+      # --------SET FOR DEVELOPMENT OR DEBUGGING---------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-px4.sh:/usr/local/bin/entrypoint.sh
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/ros_ws/src:/root/ros_ws/src
+      # - ${HOME}/gitcodes/px4-container/Gazebo/models:/root/PX4-Autopilot/Tools/sitl_gazebo/models
+      # - ${HOME}/gitcodes/px4-container/Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       #- /mnt/wslg:/mnt/wslg
       #- /usr/lib/wsl:/usr/lib/wsl
     devices:
+      # -----COMMENT OUT IF YOU EXPERIENCE OCI ERROR-----
       - /dev/dri:/dev/dri
-      #- /dev/dxg:/dev/dxg
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - /dev/dxg:/dev/dxg
     networks:
       px4-sitl-as-gz:
         ipv4_address: 172.21.0.6
-    container_name: sitl-px4
+    container_name: sitl-gz-px4
     image: kestr3l/px4:airsimg-gpu-0.0.3
-    # stdin_open: true
-    # tty: true
     deploy:
       resources:
         reservations:
@@ -78,18 +106,24 @@ services:
   qgc:
     privileged: true
     environment:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
       - DISPLAY=$DISPLAY
       - WAYLAND_DISPLAY=$WAYLAND_DISPLAY
       - QT_NO_MITSHM=1 
       - XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR
-      #- LD_LIBRARY_PATH=/usr/lib/wsl/lib
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - LD_LIBRARY_PATH=/usr/lib/wsl/lib
     volumes:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
       - /tmp/.X11-unix:/tmp/.X11-unix
-      #- /mnt/wslg:/mnt/wslg
-      #- /usr/lib/wsl:/usr/lib/wsl
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - /mnt/wslg:/mnt/wslg
+      # - /usr/lib/wsl:/usr/lib/wsl
     devices:
+      # -----COMMENT OUT IF YOU EXPERIENCE OCI ERROR-----
       - /dev/dri:/dev/dri
-      #- /dev/dxg:/dev/dxg
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - /dev/dxg:/dev/dxg
     networks:
       px4-sitl-as-gz:
         ipv4_address: 172.21.0.7
@@ -105,4 +139,7 @@ networks:
       external: true
 volumes:
      shared-image:
+
+# NETWORK CONFIG: sitl-as -> 172.21.0.5 / sitl-gz-px4 -> 172.21.0.6 / qgc -> 172.21.0.7
+# RUN FOLLOWING DOCKER NETWORK GENERATION COMMAND BEFORE RUN
 # docker network create --gateway 172.21.0.1 --subnet 172.21.0.0/16 px4-sitl-as-gz
