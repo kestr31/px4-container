@@ -9,15 +9,41 @@ echo "/_/  |_| /_/        |___/_/  |_/___/   "
 
 source /opt/ros/galactic/setup.bash
 
+# Rebuild ALL ROS2 nodes if activated
+if [[ -n ${REBUILD_RPKG} ]]; then
+	echo ">>>>>>>>>>>>>>>>integration ROS2 PKG REBUILD FLAG ENABLED<<<<<<<<<<<<<<<"
+	echo ">>>>>>>>>START REBUILDING AND INSTALLATION OF PKG 'integration'<<<<<<<<<"
+	echo "    ____  __________  __  ________    ____  "
+	echo "   / __ \/ ____/ __ )/ / / /  _/ /   / __ \ "
+	echo "  / /_/ / __/ / __  / / / // // /   / / / / "
+	echo " / _, _/ /___/ /_/ / /_/ // // /___/ /_/ /  "
+	echo "/_/ |_/_____/_____/\____/___/_____/_____/   "
+	colcon build \
+		--build-base /root/ros_ws/build \
+        --install-base /root/ros_ws/install \
+        --base-paths /root/ros_ws/src \
+		--symlink-install
+fi
+
+# Replace Client-Specific Strings in Airsim API Call Scripts
 if [ -n $PX4_SIM_HOST_ADDR ]; then
+	echo ">>>>>>>>>>>>>>>>Airsim Runs In Separate Container<<<<<<<<<<<<<<<"
+	echo ">>>>>>>>>>>>>>>>Replacing Strings In API Scripts<<<<<<<<<<<<<<<<"
+	echo "    ____  _______________   ________  ____________  "
+	echo "   / __ \/ ____/_  __/   | / ____/ / / / ____/ __ \ "
+	echo "  / / / / __/   / / / /| |/ /   / /_/ / __/ / / / / "
+	echo " / /_/ / /___  / / / ___ / /___/ __  / /___/ /_/ /  "
+	echo "/_____/_____/ /_/ /_/  |_\____/_/ /_/_____/_____/   "
 	find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/airsim.VehicleClient()/airsim.VehicleClient(ip=\"${PX4_SIM_HOST_ADDR}\", port=41451)/g"
 	find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/airsim.MultirotorClient()/airsim.MultirotorClient(ip=\"${PX4_SIM_HOST_ADDR}\", port=41451)/g"
 fi
 
+# Clear Shared Volume to Prevent Calling Ghost
 rm -rf /root/shared/Map.png &
 rm -rf /root/shared/simOn &
 sleep 1s
 
+# Wait Until AirSim starts up. Condition: /root/shared/simOn Exists?
 simFlag=$(find /root/shared -maxdepth 1 -type f -name 'simOn')
 
 while [ -z $simFlag ];
@@ -27,13 +53,22 @@ do
 	sleep 1s
 done
 
+echo "   ______________    ____  ________  ______  "
+echo "  / ___/_  __/   |  / __ \/_  __/ / / / __ \ "
+echo "  \__ \ / / / /| | / /_/ / / / / / / / /_/ / "
+echo " ___/ // / / ___ |/ _, _/ / / / /_/ / ____/  "
+echo "/____//_/ /_/  |_/_/ |_| /_/  \____/_/       "
+
+# Spawn Pine Tree in square area of (-240,-240) to (240,240)
 echo "Simulator startup! Generating Objects"
 python3 /root/AirSim/python/spawnObject.py -a Pine_01 -r 240 240
 sleep 3s
 
-python3 /root/AirSim/python/moveUAV.py
-sleep 5s
+# Move UAV: DEPRECATED IN AIRSIM-GAZEBO
+# python3 /root/AirSim/python/moveUAV.py
+# sleep 5s
 
+# Wait Until Map is Generated From AirSim Startup. Condition: /root/shared/Map.png Exists?
 mapImg=$(find /root/shared -maxdepth 1 -type f -name '*.png')
 
 while [ -z $mapImg ];
@@ -42,16 +77,19 @@ do
 	echo "Finding generated map..."
 	sleep 1s
 done
+sleep 1s
 
+# Copy Gnerated Map to Process in Path-Planning Directory
 echo "Found generated map! Copying to RRT directory"
-sleep 1s
-
-mkdir /root/ros_ws/src/integration/integration/PathPlanning/Map/
-sleep 1s
-
-cp $mapImg /root/ros_ws/src/integration/integration/PathPlanning/Map/Map.png
+mkdir /root/ros_ws/src/a4vai/a4vai/path_planning/Map &&
+cp $mapImg /root/ros_ws/src/a4vai/a4vai/path_planning/Map/RawImage.png
 sleep 5s
 
+echo "    __  ______    ____  _____________   __ "
+echo "   /  |/  /   |  / __ \/ ____/ ____/ | / / "
+echo "  / /|_/ / /| | / /_/ / / __/ __/ /  |/ /  "
+echo " / /  / / ___ |/ ____/ /_/ / /___/ /|  /   "
+echo "/_/  /_/_/  |_/_/    \____/_____/_/ |_/    "
 
 # Rebuild ALL ROS2 nodes if activated
 if [[ -n ${REBUILD_RPKG_INTEGRATION} ]]; then
@@ -77,16 +115,17 @@ source /usr/share/gazebo-11/setup.sh
 
 
 # Run MAVLink Router for Communication with QGC
-echo ">>>>>>>>>>>>>INITIALIZEING MAVLINK ROUTER FOR QGC CONNECTION<<<<<<<<<<<"
+echo ">>>>>>>>>>>>>INITIALIZING MAVLINK ROUTER FOR QGC CONNECTION<<<<<<<<<<<"
 nohup mavlink-routerd -e 172.21.0.7:14550 127.0.0.1:14550 &
 sleep 3s
 
 # Run microRTPS bridge for Communication in ROS2 msg
-echo ">>>>>>>>>>>INITIALIZEING microRTPS BRIDGE FOR ROS2 CONNECTION<<<<<<<<<<"
+echo ">>>>>>>>>>>INITIALIZING microRTPS BRIDGE FOR ROS2 CONNECTION<<<<<<<<<<"
 micrortps_agent -t UDP &
 sleep 1s
 
 # Run airsim_ros_pkgs to get sensor date from AirSim
+echo ">>>>>>>INITIALIZING airsim_ros_pkgs for ROS2 Sensor Publishing<<<<<<<<"
 echo "Starting AIRSIM ROS PKGS"
 ros2 launch airsim_ros_pkgs airsim_node.launch.py host:=172.21.0.5 &
 sleep 1s
@@ -102,17 +141,17 @@ if [[ -n ${DEBUG_ENTRYPOINT} ]]; then
 	echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>Debugging JOAH<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
 else
 	echo ">>>>>>>>>>>>>>>>RUNNING ITE SITL WITH DEFINED CONDITION<<<<<<<<<<<<<<<<"
-	echo "   _________ _____   __________  ____  "
-	echo "  / ____/   /__  /  / ____/ __ )/ __ \ "
-	echo " / / __/ /| | / /  / __/ / __  / / / / "
-	echo "/ /_/ / ___ |/ /__/ /___/ /_/ / /_/ /  "
-	echo "\____/_/  |_/____/_____/_____/\____/   "
+	echo "    ___    _       ______      __ "
+	echo "   /   |  (_)     / ____/___  / / "
+	echo "  / /| | / /_____/ / __/ __ \/ /  "
+	echo " / ___ |/ /_____/ /_/ / /_/ /_/   "
+	echo "/_/  |_/_/      \____/\____(_)    "
 	HEADLESS=${HEADLESS} make -C /root/PX4-Autopilot px4_sitl_rtps gazebo_${PX4_SIM_MODEL}__${PX4_SIM_WOLRLD} &
 	sleep 1s
 
-	# Wait Until Gazebo starts up
+	# GAZEBO STARTUP CHECKER: CONSISTED OF FOUR GATES
+	# Wait Until Gazebo Starts Up: Gate 1: Check .gazebo exists (Dir)
 	gazeoDir=$(find /root -type d -name ".gazebo" -print)
-
 	while [ -z ${gazeoDir1} ];
 	do
 		gazeoDir1=$(find /root -type d -name ".gazebo" -print)
@@ -120,8 +159,8 @@ else
 		sleep 1s
 	done
 
+	# Wait Until Gazebo Starts Up: Gate 2: Check client-11345 exists (Dir)
 	gazeoDir2=$(find /root/.gazebo -type d -name "client-11345" -print)
-
 	while [[ -z ${gazeoDir2} ]];
 	do
 		gazeoDir2=$(find /root/.gazebo -type d -name "client-11345" -print)
@@ -129,8 +168,8 @@ else
 		sleep 1s
 	done
 
+	# Wait Until Gazebo Starts Up: Gate 3: Check default.log exists (Dir)
 	gazeboStat1=$(find /root/.gazebo/client-11345 -type f -name "default.log" -print)
-
 	while [[ -z ${gazeboStat1} ]];
 	do
 		gazeboStat1=$(find /root/.gazebo/client-11345 -type f -name "default.log" -print)
@@ -138,8 +177,8 @@ else
 		sleep 1s
 	done
 
+	# Wait Until Gazebo Starts Up: Gate 4: Check certain log in default.log exists (String)
 	gazeboStat2=$(cat /root/.gazebo/client-11345/default.log | grep "Connected to gazebo master")
-
 	while [[ -z ${gazeboStat2} ]];
 	do
 		gazeboStat2=$(cat /root/.gazebo/client-11345/default.log | grep "Connected to gazebo master")
@@ -147,9 +186,12 @@ else
 		sleep 1s
 	done
 
-	# Run integration node for the one and the all
-	echo "Run integration node"
-	ros2 run integration IntegrationTest &
+	# Run AirSim-Gazebo Integration Binary
+	# This only works on default AirSim container IP (172.21.0.5)
+	# If IP Changed, You Must Rebuid GazeboDrone Package Manually
+	# Refer to 'stage_airsim' in corresponding Dockerfile
+	/root/AirSim/GazeboDrone/build/GazeboDrone &
+	sleep 3s
 
 	echo "    _____ ____________       ______________    ____  ______ "
 	echo "   / ___//  _/_  __/ /      / ___/_  __/   |  / __ \/_  __/ "
@@ -158,8 +200,16 @@ else
 	echo " /____/___/ /_/ /_____/   /____//_/ /_/  |_/_/ |_| /_/      "
 fi
 
-/root/AirSim/GazeboDrone/build/GazeboDrone &
-sleep 3s
+
+ros2 run a4vai deep_sac_module &
+
+ros2 run a4vai path_following_gpr &
+ros2 run a4vai path_following_guid &
+ros2 run a4vai path_following_att &
+
+ros2 run a4vai JBNU_module &
+
+ros2 run a4vai controller &
 
 # # Keep container running. The Sleeping Beauty
 sleep infinity

@@ -7,32 +7,67 @@ echo "  / /| |/ // /______| | / / /| |  / /  "
 echo " / ___ /__  __/_____/ |/ / ___ |_/ /   "
 echo "/_/  |_| /_/        |___/_/  |_/___/   "
 
-if [ -n $PX4_SIM_HOST_ADDR ]; then
-	find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/airsim.VehicleClient()/airsim.VehicleClient(ip=\"${PX4_SIM_HOST_ADDR}\", port=41451)/g"
-	find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/airsim.MultirotorClient()/airsim.MultirotorClient(ip=\"${PX4_SIM_HOST_ADDR}\", port=41451)/g"
+source /opt/ros/galactic/setup.bash
+
+# Rebuild ALL ROS2 nodes if activated
+if [[ -n ${REBUILD_RPKG} ]]; then
+	echo ">>>>>>>>>>>>>>>>integration ROS2 PKG REBUILD FLAG ENABLED<<<<<<<<<<<<<<<"
+	echo ">>>>>>>>>START REBUILDING AND INSTALLATION OF PKG 'integration'<<<<<<<<<"
+	echo "    ____  __________  __  ________    ____  "
+	echo "   / __ \/ ____/ __ )/ / / /  _/ /   / __ \ "
+	echo "  / /_/ / __/ / __  / / / // // /   / / / / "
+	echo " / _, _/ /___/ /_/ / /_/ // // /___/ /_/ /  "
+	echo "/_/ |_/_____/_____/\____/___/_____/_____/   "
+	colcon build \
+		--build-base /root/ros_ws/build \
+        --install-base /root/ros_ws/install \
+        --base-paths /root/ros_ws/src \
+		--symlink-install
 fi
 
-rm -rf /home/user/Documents/AirSim/settings.json
-sleep 1s
+if [[ -n ${DEBUG_ENTRYPOINT} ]]; then
+	echo ">>>>>>>>>>ENTRYPOINT DEBUGGING ENABLED. DO NOT RUN ANY PROCESS<<<<<<<<<"
+	echo "    ____  __________  __  ________"
+	echo "   / __ \/ ____/ __ )/ / / / ____/"
+	echo "  / / / / __/ / __  / / / / / __  "
+	echo " / /_/ / /___/ /_/ / /_/ / /_/ /  "
+	echo "/_____/_____/_____/\____/\____/   "
+	echo ">>>>>>>>>>>>>>>>>>>>>>>>>>Noneun Ge Jeil JOAH<<<<<<<<<<<<<<<<<<<<<<<<<<"
+	echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>Debugging JOAH<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+else
+	echo ">>>>>>>>>>>>>>>>RUNNING ITE SITL WITH DEFINED CONDITION<<<<<<<<<<<<<<<<"
+	echo "    ___    _       ______      __ "
+	echo "   /   |  (_)     / ____/___  / / "
+	echo "  / /| | / /_____/ / __/ __ \/ /  "
+	echo " / ___ |/ /_____/ /_/ / /_/ /_/   "
+	echo "/_/  |_/_/      \____/\____(_)    "
 
-su -c "/home/user/ForestDeploy/ForestDeploy.sh -windowed" user &
-sleep 3s
+	# Start AirSim In Windowed Mode
+	su -c "/home/user/ForestDeploy/ForestDeploy.sh -windowed" user &
+	sleep 3s
 
-touch /root/shared/simOn
-mapImg=$(find /home/user/ForestDeploy/ForestDeploy -maxdepth 1 -type f -name '*.png')
+	# After Starting Up Airsim, Generate Flag File for Notification
+	touch /root/shared/simOn
 
-while [ -z $mapImg ];
-do
-    mapImg=$(find /home/user/ForestDeploy/ForestDeploy -maxdepth 1 -type f -name '*.png')
-	echo "Finding generated map..."
+	# Wait Until AirSim starts up. Condition: /root/shared/simOn Exists?
+	mapImg=$(find /home/user/ForestDeploy/ForestDeploy -maxdepth 1 -type f -name '*.png')
+	while [ -z $mapImg ];
+	do
+		mapImg=$(find /home/user/ForestDeploy/ForestDeploy -maxdepth 1 -type f -name '*.png')
+		echo "Finding generated map..."
+		sleep 1s
+	done
+
+	echo "Found generated map! Copying to shared volume"
 	sleep 1s
-done
+	
+	echo "    __  ______    ____  _____________   __ "
+	echo "   /  |/  /   |  / __ \/ ____/ ____/ | / / "
+	echo "  / /|_/ / /| | / /_/ / / __/ __/ /  |/ /  "
+	echo " / /  / / ___ |/ ____/ /_/ / /___/ /|  /   "
+	echo "/_/  /_/_/  |_/_/    \____/_____/_/ |_/    "
 
-echo "Found generated map! Copying to shared volume"
-sleep 1s
-
-cp $mapImg /root/shared/Map.png
-
-sleep infinity
+	cp $mapImg /root/shared/Map.png
+fi
 
 sleep infinity

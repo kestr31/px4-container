@@ -13,6 +13,8 @@ services:
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
       # - REBUILD=true
+      - DEBUG_ENTRYPOINT=1
+      # - REBUILD_RPKG=1
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       #- LD_LIBRARY_PATH=/usr/lib/wsl/lib
@@ -70,9 +72,9 @@ services:
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
       # - HEADLESS=1
-      # - DEBUG_ENTRYPOINT=1
+      - DEBUG_ENTRYPOINT=1
       # - PX4_SITL_DEBUGGER=ide
-      # - REBUILD_RPKG_INTEGRATION=1
+      # - REBUILD_RPKG=1
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
     volumes:
       # -----------DEFAULT VALUE DO NOT MODIFY-----------

@@ -80,21 +80,21 @@ RUN source /opt/ros/galactic/setup.bash \
 		--cmake-args -DCMAKE_BUILD_TYPE=Debug
 
 
-FROM stage_deps as stage_rnode
+# FROM stage_deps as stage_rnode
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"] 
+# SHELL ["/bin/bash", "-o", "pipefail", "-c"] 
 
-RUN \
-	rm -rf Gazebo/ros_ws
+# RUN \
+# 	rm -rf Gazebo/ros_ws
 
-COPY AirSim-Gazebo/ros_ws /root/ros_ws/src
+# COPY AirSim-Gazebo/ros_ws /root/ros_ws/src
 
-RUN \
-	colcon build \
-		--build-base ~/ros_ws/build \
-		--install-base ~/ros_ws/install \
-		--base-paths ~/ros_ws/src \
-		--symlink-install
+# RUN \
+# 	colcon build \
+# 		--build-base ~/ros_ws/build \
+# 		--install-base ~/ros_ws/install \
+# 		--base-paths ~/ros_ws/src \
+# 		--symlink-install
 
 
 FROM stage_deps as stage_px4sitl
@@ -129,13 +129,13 @@ COPY --from=stage_airsim /root/AirSim/GazeboDrone /root/AirSim/GazeboDrone
 COPY --from=stage_airsim /root/AirSim/ros2 /root/AirSim/ros2
 COPY --from=stage_airsim /root/.local /root/.local
 
-COPY --from=stage_rnode /root/ros_ws /root/ros_ws
+# COPY --from=stage_rnode /root/ros_ws /root/ros_ws
 
-COPY AirSim/python /root/AirSim/python
+COPY AirSim-Gazebo/python /root/AirSim/python
 COPY scripts /root/tools
 COPY AirSim/scripts /root/run
 
-COPY --chown=1001:1001 AirSim/ForestDeploy /home/user/ForestDeploy
+COPY --chown=1001:1001 AirSim-Gazebo/ForestDeploy /home/user/ForestDeploy
 COPY --chown=1001:1001 AirSim-Gazebo/models/AirSim/typhoon_h480/TyphoonH480.json /home/user/Documents/AirSim/settings.json
 
 RUN \
@@ -152,5 +152,5 @@ RUN \
 
 WORKDIR /root
 
-COPY AirSim/entrypoint-sim.sh /usr/local/bin/entrypoint.sh
+COPY AirSim-Gazebo/entrypoint-sim.sh /usr/local/bin/entrypoint.sh
 CMD [ "/usr/local/bin/entrypoint.sh" ]

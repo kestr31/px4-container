@@ -90,7 +90,7 @@
 						"ImageType": 2,
 						"Width": 1280,
 						"Height":720,
-						"FOV_Degrees": 87,
+						"FOV_Degrees": 90,
 						
 						"AutoExposureSpeed": 100,
 						"AutoExposureBias": 0,
