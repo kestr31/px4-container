@@ -43,6 +43,7 @@ FROM stage_deps as stage_airsim
 SHELL ["/bin/bash", "-o", "pipefail", "-c"] 
 
 COPY AirSim/pydeps.txt /tmp/pydeps.txt
+COPY AirSim/models/typhoon_h480/include /tmp/models/include
 
 RUN \
 	python3 -m pip install --user \
@@ -51,6 +52,7 @@ RUN \
 		$(sed '$!d' /tmp/pydeps.txt)
 
 RUN git clone https://github.com/microsoft/AirSim.git -b v1.8.1 /root/AirSim \
+	&& mv tmp/models/include /root/AirSim/AirLib/typhoon_h480/include \
 	&& /root/AirSim/setup.sh \
 	&& /root/AirSim/build.sh
 
