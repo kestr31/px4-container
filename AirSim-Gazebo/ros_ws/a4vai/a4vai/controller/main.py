@@ -33,7 +33,7 @@ if __name__ == '__main__':
 # rate = node.create_rate(2)
 # try:
 #     while rclpy.ok():
-#         print('Help me body, you are my only hope')
+#         print('Help me buddy, you are my only hope')
 #         rate.sleep()
 # except KeyboardInterrupt:
 #     pass
