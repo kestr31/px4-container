@@ -198,4 +198,3 @@ void GazeboDrydenPlugin::OnUpdate(const common::UpdateInfo& _info) {
 
 GZ_REGISTER_WORLD_PLUGIN(GazeboDrydenPlugin);
 }
-

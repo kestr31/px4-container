@@ -13,7 +13,7 @@ services:
       #- LD_LIBRARY_PATH=/usr/lib/wsl/lib
       # ----------SET ITE SIMULTAION PARAMETERS----------
       #  ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
-      - PX4_SIM_HOST_ADDR=172.30.0.5
+      - PX4_SIM_HOST_ADDR=172.20.0.5
       - PX4_SIM_MODEL=typhoon_inha
       - PX4_SIM_WOLRLD=grass_dryden
       - NO_PXH=1
@@ -21,7 +21,7 @@ services:
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
       # - HEADLESS=1
-      - DEBUG_ENTRYPOINT=1
+      # - DEBUG_ENTRYPOINT=1
       # - PX4_SITL_DEBUGGER=ide
       # - REBUILD_RPKG_INTEGRATION=1
       # - REBUILD_RPKG_GAZEBO=1
@@ -50,7 +50,7 @@ services:
       #- /dev/dxg:/dev/dxg
     networks:
       px4-sitl-gazebo-attoman:
-        ipv4_address: 172.30.0.5
+        ipv4_address: 172.20.0.5
     container_name: sitl-gazebo-attoman
     image: kestr3l/px4:gazebo-gpu-0.0.3
     deploy:
@@ -82,7 +82,7 @@ services:
       # - /dev/dxg:/dev/dxg
     networks:
       px4-sitl-gazebo-attoman:
-        ipv4_address: 172.30.0.7
+        ipv4_address: 172.20.0.6
     container_name: sitl-qgc-attoman
     image: kestr3l/qgc-app:nobg-4.0.0
     deploy:
@@ -96,4 +96,4 @@ networks:
 
 # NETWORK CONFIG: gazebo-px4 -> 172.20.0.5 / qgc -> 172.20.0.6
 # RUN FOLLOWING DOCKER NETWORK GENERATION COMMAND BEFORE RUN
-# docker network create --gateway 172.30.0.1 --subnet 172.30.0.0/16 px4-sitl-gazebo-attoman
+# docker network create --gateway 172.20.0.1 --subnet 172.20.0.0/16 px4-sitl-gazebo-attoman
