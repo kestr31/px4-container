@@ -87,7 +87,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN \
 	rm -rf Gazebo/ros_ws
 
-COPY AirSim/ros_ws /root/ros_ws
+COPY AirSim-Gazebo/ros_ws /root/ros_ws/src
 
 RUN \
 	colcon build \
@@ -95,6 +95,14 @@ RUN \
 		--install-base ~/ros_ws/install \
 		--base-paths ~/ros_ws/src \
 		--symlink-install
+
+
+FROM stage_deps as stage_px4sitl
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"] 
+
+RUN \
+	make -C /root/PX4-Autopilot px4_sitl_rtps
 
 
 FROM stage_deps as stage_final
