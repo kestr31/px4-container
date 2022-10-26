@@ -41,7 +41,7 @@ from rclpy.qos import ReliabilityPolicy, QoSProfile, LivelinessPolicy, Durabilit
 from sensor_msgs.msg import LaserScan
 
 
-from .map_service import MapService
+# from .map_service import MapService
 #from .map_queue.map_queue import M
 from .path_plan_service import PathPlanningService
 from .path_follow_service import PathFollowingGPRService, PathFollowingService, PathFollowingGuidService
@@ -131,7 +131,7 @@ class ControllerNode(Node):
         #############################
         #####   Sequence Flag   #####
         #############################
-        self.map_generation_flag = True
+        # self.map_generation_flag = True
         self.path_planning_complete = False
         self.InitialPositionFlag = False
         self.InitialPosition = [0.0, 0.0, -5.0]
@@ -219,30 +219,30 @@ class ControllerNode(Node):
         if self.InitialPositionFlag == True:
             self.get_logger().info("===== Test Timer On =====")
             
-            if self.map_generation_flag is True :
-                map_service = MapService()
-                map_service.RequestMapGeneration(self.map_generation_flag)
-                rclpy.spin_once(map_service)
-                if map_service.future.done():
-                    try : 
-                        map_service.result = map_service.future.result()
-                    except Exception as e:
-                        map_service.get_logger().info(
-                            'Service call failed %r' % (e,))
-                    else :
-                        map_service.get_logger().info( "Map Generation Complete!! ")
-                        print(map_service.result.map_sequence_init)
-                        if map_service.result.map_sequence_init is True :
-                            self.map_generation_flag = False
-                            self.path_planning_flag = True
-                        else :
-                            pass    
-                    finally : 
-                        map_service.destroy_node()
-            else : 
-                pass
+            # if self.map_generation_flag is True :
+            #     map_service = MapService()
+            #     map_service.RequestMapGeneration(self.map_generation_flag)
+            #     rclpy.spin_once(map_service)
+            #     if map_service.future.done():
+            #         try : 
+            #             map_service.result = map_service.future.result()
+            #         except Exception as e:
+            #             map_service.get_logger().info(
+            #                 'Service call failed %r' % (e,))
+            #         else :
+            #             map_service.get_logger().info( "Map Generation Complete!! ")
+            #             print(map_service.result.map_sequence_init)
+            #             if map_service.result.map_sequence_init is True :
+            #                 self.map_generation_flag = False
+            #                 self.path_planning_flag = True
+            #             else :
+            #                 pass    
+            #         finally : 
+            #             map_service.destroy_node()
+            # else : 
+            #     pass
             ##     Path Planning MODULE
-            if self.path_planning_flag is True :
+            if self.path_planning_flag is True:
                 
                 planning_service = PathPlanningService()
                 planning_service.RequestPathPlanning(self.start_point, self.goal_point)

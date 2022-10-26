@@ -1,6 +1,7 @@
 {
     "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md",
     "SettingsVersion": 1.2,
+	"PhysicsEngineName": "ExternalPhysicsEngine",
 	"PawnPaths": {
 		"Typhoon": {"PawnBP": "Class'/AirSim/BluePrints/BP_TyphoonH480.BP_TyphoonH480_C'"}
 	},
@@ -9,7 +10,7 @@
     "Vehicles": {
         "Typhoon_1": {       
             "VehicleType": "SimpleFlight",
-			"Model": "Hexacopter",
+			"Model": "Typhoon_H480",
 			"PawnPath": "Typhoon",
             "AutoCreate": true,
 			"Parameters": {
@@ -88,8 +89,8 @@
 					"CaptureSettings": [
 						{
 						"ImageType": 2,
-						"Width": 1280,
-						"Height":720,
+						"Width": 640,
+						"Height":480,
 						"FOV_Degrees": 90,
 						
 						"AutoExposureSpeed": 100,

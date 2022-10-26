@@ -13,7 +13,7 @@ services:
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
       # - REBUILD=true
-      - DEBUG_ENTRYPOINT=1
+      # - DEBUG_ENTRYPOINT=1
       # - REBUILD_RPKG=1
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
@@ -30,6 +30,7 @@ services:
       - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/models/AirSim/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
       # - ${HOME}/gitcodes/px4-container/AirSim/models/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
       - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-sim.sh:/usr/local/bin/entrypoint.sh
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/LinuxNoEditor_temp:/home/user/ForestDeploy
       # - ${HOME}/gitcodes/px4-container/AirSim/python/moveUAV.py:/root/AirSim/python/moveUAV.py
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
@@ -40,6 +41,7 @@ services:
       - /dev/dri:/dev/dri
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       # - /dev/dxg:/dev/dxg
+    # network_mode: host
     networks:
       px4-sitl-as-gz:
         ipv4_address: 172.21.0.5
@@ -65,16 +67,20 @@ services:
       # - LD_LIBRARY_PATH=/usr/lib/wsl/lib
       # ----------SET ITE SIMULTAION PARAMETERS----------
       #  ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
-      - PX4_SIM_HOST_ADDR=172.21.0.5
+      - AIRSIM_HOST=172.21.0.5
+      - PX4_SIM_HOST_ADDR=172.21.0.6
       - PX4_SIM_MODEL=typhoon_inha
       - PX4_SIM_WOLRLD=grass
       - NO_PXH=1
+      # - PX4_HOME_LAT=28.452386
+      # - PX4_HOME_LON=-13.867138
+      # - PX4_HOME_ALT=28.5
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
       # - HEADLESS=1
-      - DEBUG_ENTRYPOINT=1
+      # - DEBUG_ENTRYPOINT=1
       # - PX4_SITL_DEBUGGER=ide
-      # - REBUILD_RPKG=1
+      - REBUILD_RPKG=1
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
     volumes:
       # -----------DEFAULT VALUE DO NOT MODIFY-----------
@@ -83,9 +89,11 @@ services:
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
       - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-px4.sh:/usr/local/bin/entrypoint.sh
-      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/ros_ws/src:/root/ros_ws/src
+      - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/ros_ws:/root/ros_ws/src
       # - ${HOME}/gitcodes/px4-container/Gazebo/models:/root/PX4-Autopilot/Tools/sitl_gazebo/models
       # - ${HOME}/gitcodes/px4-container/Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/GazeboDrone:/root/AirSim/GazeboDrone/build/GazeboDrone
+      # - /home/merlin/gitcodes/px4-container/AirSim-Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       #- /mnt/wslg:/mnt/wslg
@@ -94,7 +102,7 @@ services:
       # -----COMMENT OUT IF YOU EXPERIENCE OCI ERROR-----
       - /dev/dri:/dev/dri
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
-      # - /dev/dxg:/dev/dxg
+    # network_mode: host
     networks:
       px4-sitl-as-gz:
         ipv4_address: 172.21.0.6
@@ -126,6 +134,7 @@ services:
       - /dev/dri:/dev/dri
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       # - /dev/dxg:/dev/dxg
+    # network_mode: host
     networks:
       px4-sitl-as-gz:
         ipv4_address: 172.21.0.7

@@ -60,7 +60,7 @@ else
 
 	echo "Found generated map! Copying to shared volume"
 	sleep 1s
-	
+
 	echo "    __  ______    ____  _____________   __ "
 	echo "   /  |/  /   |  / __ \/ ____/ ____/ | / / "
 	echo "  / /|_/ / /| | / /_/ / / __/ __/ /  |/ /  "
@@ -68,6 +68,11 @@ else
 	echo "/_/  /_/_/  |_/_/    \____/_____/_/ |_/    "
 
 	cp $mapImg /root/shared/Map.png
+
+	# Run MAVLink Router for Communication with QGC
+	echo ">>>>>>>>>>>>>INITIALIZING MAVLINK ROUTER FOR QGC CONNECTION<<<<<<<<<<<"
+	nohup mavlink-routerd -e 172.21.0.7:14550 127.0.0.1:14550 &
+	sleep 3s
 fi
 
 sleep infinity
