@@ -164,9 +164,9 @@ COPY px4_ros /tmp/px4_ros
 RUN \
     git clone https://github.com/PX4/px4_ros_com.git ~/px4_ros/src/px4_ros_com \
     && git -C ~/px4_ros/src/px4_ros_com reset --hard 7e25c34df0aab25d6e723385322c62712ea97207 \
-
-    && git clone     && cp -r /tmp/px4_ros/src/* ~/px4_ros/src \
-    && git -C ~/px4_ros/src reset --hard 7e25c34df0aab25d6e723385322c62712ea97207 \
+    && git clone https://github.com/PX4/px4_msgs.git ~/px4_ros/src/px4_msgs \
+    && git -C ~/px4_ros/src/px4_msgs reset --hard daee1217b8834cb5293f7913bd7f0850c882ffb7 \
+    && cp -r /tmp/px4_ros/src/* ~/px4_ros/src \
     && rm -rf /root/px4_ros/src/px4_msgs/msg/* \
         /root/px4_ros/src/px4_ros_com/src/examples \
         /root/px4_ros/src/px4_ros_com/launch \
