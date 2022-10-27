@@ -106,7 +106,7 @@ class SAC:
         onnx.checker.check_model(onnx_model)
         ort_session = ort.InferenceSession('/root/ros_ws/src/a4vai/a4vai/path_planning/model/test26.onnx')
 
-        MapSize = 5000
+        MapSize = 2000
         ############### Map 회전 방향 확인 필요 ################
         # RawImage = Map
         RawImage = (cv2.imread("/root/ros_ws/src/a4vai/a4vai/path_planning/Map/RawImage.png", cv2.IMREAD_GRAYSCALE))
@@ -359,7 +359,7 @@ class SAC:
                 prunedNew_x_points.append(First[0])
                 prunedNew_y_points.append(First[1])
                 prunedNew_z_points.append(-5.0)
-                for j in range(0, 5000):
+                for j in range(0, 2000):
                     State = State + 50 * Unit
 
                     prunedNew_x_points.append(State[0])
@@ -407,7 +407,7 @@ class SAC:
                     break
                 
                 # Map Out 판단
-                if State[1] > 5000 or State[0] > 5000:
+                if State[1] > 2000 or State[0] > 2000:
                     break
                 
                 if State[1] < 0 or State[0] < 0:

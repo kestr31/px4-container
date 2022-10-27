@@ -43,7 +43,7 @@ from sensor_msgs.msg import LaserScan
 from msg_srv_act_interface.msg import PFAtt2Control
 from msg_srv_act_interface.msg import CA2Control
 
-from .map_service import MapService
+# from .map_service import MapService
 #from .map_queue.map_queue import M
 from .path_plan_service import PathPlanningService
 from .path_follow_service import PathFollowingGPRService, PathFollowingService, PathFollowingGuidService
@@ -221,31 +221,36 @@ class ControllerNode(Node):
         else : 
             pass
         if self.InitialPositionFlag == True:
-            if self.map_generation_flag is True :
-                map_service = MapService()
-                map_service.RequestMapGeneration(self.map_generation_flag)
-                rclpy.spin_until_future_complete(map_service, map_service.future)
-                if map_service.future.done():
-                    try : 
-                        map_service.result = map_service.future.result()
-                    except Exception as e:
-                        map_service.get_logger().info(
-                            'Service call failed %r' % (e,))
-                    else :
-                        if map_service.result.map_sequence_init is True :
-                            self.map_generation_flag = False
-                            self.path_planning_flag = True
-                            # self.path_following_gpr_flag = True
-                            # self.collision_avoidance_flag = True
-                        else :
-                            pass    
-                    finally : 
-                        map_service.destroy_node()
-                else : 
-                    self.get_logger().warn("===== Map Generation Module Can't Response =====")
-            else : 
-                pass
+            # if self.map_generation_flag is True :
+            #     map_service = MapService()
+            #     map_service.RequestMapGeneration(self.map_generation_flag)
+            #     rclpy.spin_until_future_complete(map_service, map_service.future)
+            #     if map_service.future.done():
+            #         try : 
+            #             map_service.result = map_service.future.result()
+            #         except Exception as e:
+            #             map_service.get_logger().info(
+            #                 'Service call failed %r' % (e,))
+            #         else :
+            #             if map_service.result.map_sequence_init is True :
+            #                 self.map_generation_flag = False
+            #                 self.path_planning_flag = True
+            #                 # self.path_following_gpr_flag = True
+            #                 # self.collision_avoidance_flag = True
+            #             else :
+            #                 pass    
+            #         finally : 
+            #             map_service.destroy_node()
+            #     else : 
+            #         self.get_logger().warn("===== Map Generation Module Can't Response =====")
+            # else : 
+            #     pass
             ##     Path Planning MODULE
+
+            # Overriden since we use airsim
+            self.map_generation_flag = False
+            self.path_planning_flag = True
+
             if self.path_planning_flag is True :
                 planning_service = PathPlanningService()
                 planning_service.RequestPathPlanning(self.start_point, self.goal_point)
