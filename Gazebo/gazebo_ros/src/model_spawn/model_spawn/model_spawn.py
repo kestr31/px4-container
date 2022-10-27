@@ -173,9 +173,10 @@ class ModelSpawnClass(Node):
         cv2.rotate(self.GridMap, cv2.ROTATE_180)
         cv2.flip(self.GridMap,1)
 
-        cv2.cvtColor(self.GridMap, cv2.COLOR_BGR2GRAY)
-        cv2.threshold(self.GridMap, 150, 255, cv2.THRESH_BINARY)
+        cv2.cvtColor(self.GridMap, cv2.COLOR_RGB2GRAY)
+        cv2.threshold(self.GridMap, 120, 255, cv2.THRESH_BINARY)
         cv2.imwrite("/root/ros_ws/src/a4vai/a4vai/path_planning/Map/RawImage.png",self.GridMap)
+
 
         self.get_logger().info("===== Map Save!! =====")
 
