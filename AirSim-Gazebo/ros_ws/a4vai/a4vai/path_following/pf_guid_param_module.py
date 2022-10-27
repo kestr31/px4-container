@@ -71,7 +71,7 @@ class PFGuidModule(Node):
         self.GPR_output_index = 3
         self.GPR_output = []    #   double
         self.outNDO = []    #   double
-        self.Flag_Guid_Param = 1    #   int
+        self.Flag_Guid_Param = 2    #   int
         ##  Output
         self.response_timestamp = 0 #   uint
         self.LAD = 0.0    #   double

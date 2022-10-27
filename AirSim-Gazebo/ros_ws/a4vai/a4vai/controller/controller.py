@@ -185,7 +185,7 @@ class ControllerNode(Node):
         self.gpr_output = []
         self.gpr_output_data = []
         self.gpr_output_index = 0
-        self.flag_guid_param = 1
+        self.flag_guid_param = 2
 
         self.request_path_plnning_flag = True
         
