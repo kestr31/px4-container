@@ -341,6 +341,30 @@ class SAC:
             pruned_y_points.append(pruned_wp[i][1])
             pruned_z_points.append(-5.0)
 
+        prunedNew_x_points = []
+        prunedNew_y_points = []
+        for i in range(len(pruned_wp) - 1):
+            First = np.array([pruned_x_points[i], pruned_y_points[i]])
+            Second = np.array([pruned_x_points[i + 1], pruned_y_points[i + 1]])
+
+            if (np.linalg.norm(Second - First) <= 50):
+                prunedNew_x_points.append(pruned_x_points[i])
+                prunedNew_y_points.append(pruned_y_points[i])
+            else:
+                Unit = (Second - First) / np.linalg.norm(Second - First)
+
+                State = First
+                prunedNew_x_points.append(First[0])
+                prunedNew_y_points.append(First[1])
+                for j in range(0, 5000):
+                    State = State + 50 * Unit
+
+                    prunedNew_x_points.append(State[0])
+                    prunedNew_y_points.append(State[1])
+
+                    if (np.linalg.norm(Second - State) <= 50):
+                        break
+
         ## End Pruning Computation
         TimeEnd = time.time()
 
@@ -401,7 +425,7 @@ class SAC:
         print("SAC-Pruning y-waypoints", pruned_y_points)
         print("SAC-Pruning z-waypoints", pruned_z_points)
 
-        return pruned_x_points, pruned_y_points, pruned_z_points
+        return prunedNew_x_points, prunedNew_y_points, pruned_z_points
     
     
 class RRT:
