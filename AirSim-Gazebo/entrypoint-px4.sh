@@ -52,7 +52,7 @@ do
 	echo "Waiting until simulator starts up..."
 	sleep 0.5s
 done
-sleep 4s
+sleep 1s
 
 echo "   ______________    ____  ________  ______  "
 echo "  / ___/_  __/   |  / __ \/_  __/ / / / __ \ "
@@ -60,10 +60,10 @@ echo "  \__ \ / / / /| | / /_/ / / / / / / / /_/ / "
 echo " ___/ // / / ___ |/ _, _/ / / / /_/ / ____/  "
 echo "/____//_/ /_/  |_/_/ |_| /_/  \____/_/       "
 
-# Spawn Pine Tree in square area of (-240,-240) to (240,240)
-echo "Simulator startup! Generating Objects"
-python3 /root/AirSim/python/spawnObject.py -a Pine_01 -r 240 240
-sleep 3s
+# # Spawn Pine Tree in square area of (-240,-240) to (240,240)
+# echo "Simulator startup! Generating Objects"
+# python3 /root/AirSim/python/spawnObject.py -a Pine_01 -r 240 240
+# sleep 3s
 
 # Move UAV: DEPRECATED IN AIRSIM-GAZEBO
 # python3 /root/AirSim/python/moveUAV.py

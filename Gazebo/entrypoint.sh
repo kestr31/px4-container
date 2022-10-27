@@ -1,5 +1,31 @@
 #!/bin/bash
 
+# Start virtual X server in the background
+# - DISPLAY default is :99, set in dockerfile
+# - Users can override with `-e DISPLAY=` in `docker run` command to avoid
+#   running Xvfb and attach their screen
+if [[ -x "$(command -v Xvfb)" && "$DISPLAY" == ":99" ]]; then
+	echo "Starting Xvfb"
+	Xvfb :99 -screen 0 1600x1200x24+32 &
+fi
+
+# Check if the ROS_DISTRO is passed and use it
+# to source the ROS environment
+if [ -n "${ROS_DISTRO}" ]; then
+	source "/opt/ros/$ROS_DISTRO/setup.bash"
+fi
+
+# Use the LOCAL_USER_ID if passed in at runtime
+if [ -n "${LOCAL_USER_ID}" ]; then
+	echo "Starting with UID : $LOCAL_USER_ID"
+	# modify existing user's id
+	usermod -u $LOCAL_USER_ID user
+	# run as user
+	exec gosu user "$@"
+else
+	exec "$@"
+fi
+
 # ------------A4VAI DEFINED ENTRYPOINT-------------
 echo "    ___   __ __      _    _____    ____"
 echo "   /   | / // /     | |  / /   |  /  _/"
@@ -46,7 +72,7 @@ source /usr/share/gazebo-11/setup.sh
 
 # Run MAVLink Router for Communication with QGC
 echo ">>>>>>>>>>>>>INITIALIZEING MAVLINK ROUTER FOR QGC CONNECTION<<<<<<<<<<<"
-nohup mavlink-routerd -e 172.20.0.6:14550 127.0.0.1:14550 &
+nohup mavlink-routerd -e 172.30.0.7:14550 127.0.0.1:14550 &
 sleep 3s
 
 # Run microRTPS bridge for Communication in ROS2 msg

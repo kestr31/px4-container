@@ -90,6 +90,7 @@ services:
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
       - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-px4.sh:/usr/local/bin/entrypoint.sh
       - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/ros_ws:/root/ros_ws/src
+      # - /home/merlin/gitcodes/px4-container/AirSim-Gazebo/python/spawnObject.py:/root/AirSim/python/spawnObject.py
       # - ${HOME}/gitcodes/px4-container/Gazebo/models:/root/PX4-Autopilot/Tools/sitl_gazebo/models
       # - ${HOME}/gitcodes/px4-container/Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
       # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/GazeboDrone:/root/AirSim/GazeboDrone/build/GazeboDrone

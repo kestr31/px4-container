@@ -14,16 +14,16 @@ def genObj(asset_name,region,low,high):
         desired_name = f"{asset_name}_airsim_{i}"
         scale = airsim.Vector3r(random.uniform(1.0,2.0), random.uniform(1.0,2.0), random.uniform(1.0,2.0))
 
-        posX = random.randrange(-region[0]+250,region[0]+250)
-        posY = random.randrange(-region[1]+250,region[1]+250)
+        posX = random.randrange(-region[1]+250,region[1]+250)
+        posY = random.randrange(-region[0]-250,region[0]-250)
         posZ = 0.3
         dist1 = np.linalg.norm(np.array((posX,posY)) - np.array((10,10)))
         dist2 = np.linalg.norm(np.array((posX,posY)) - np.array((490,490)))
 
         # Reroll until flight area is secured
         while dist1 <= 2.5 or dist2 <= 2.5:
-            posX = random.randrange(-region[0]+250,region[0]+250)
-            posY = random.randrange(-region[1]+250,region[1]+250)
+            posX = random.randrange(-region[1]+250,region[1]+250)
+            posY = random.randrange(-region[0]-250,region[0]-250)
             dist1 = np.linalg.norm(np.array((posX,posY)) - np.array((10,10)))
             dist2 = np.linalg.norm(np.array((posX,posY)) - np.array((490,490)))
 
