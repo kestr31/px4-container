@@ -44,7 +44,7 @@ else
 
 	# Start AirSim In Windowed Mode
 	su -c "/home/user/ForestDeploy/ForestDeploy.sh -windowed" user &
-	sleep 3s
+	sleep 2s
 
 	# Spawn Pine Tree in square area of (-240,-240) to (240,240)
 	echo "Simulator startup! Generating Objects"

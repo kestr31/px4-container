@@ -60,15 +60,6 @@ echo "  \__ \ / / / /| | / /_/ / / / / / / / /_/ / "
 echo " ___/ // / / ___ |/ _, _/ / / / /_/ / ____/  "
 echo "/____//_/ /_/  |_/_/ |_| /_/  \____/_/       "
 
-# # Spawn Pine Tree in square area of (-240,-240) to (240,240)
-# echo "Simulator startup! Generating Objects"
-# python3 /root/AirSim/python/spawnObject.py -a Pine_01 -r 240 240
-# sleep 3s
-
-# Move UAV: DEPRECATED IN AIRSIM-GAZEBO
-# python3 /root/AirSim/python/moveUAV.py
-# sleep 5s
-
 # Wait Until Map is Generated From AirSim Startup. Condition: /root/shared/Map.png Exists?
 mapImg=$(find /root/shared -maxdepth 1 -type f -name '*.png')
 
