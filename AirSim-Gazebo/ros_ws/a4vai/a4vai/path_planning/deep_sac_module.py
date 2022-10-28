@@ -244,7 +244,7 @@ class SAC:
 
             cv2.line(imageLine, (Im_i, Im_j), (Im_iN, Im_jN), (0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
 
-        cv2.imwrite('MCResult/TestResult0.png', imageLine)  ################################
+        cv2.imwrite('/root/MCResult/TestResult0.png', imageLine)  ################################
 
         ## For Pruning
         ## Start Pruning Computation
@@ -387,7 +387,7 @@ class SAC:
 
             cv2.line(imageLine, (Im_i, Im_j), (Im_iN, Im_jN), (0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
 
-        cv2.imwrite('MCResult/TestResult_prunning0.png', imageLine)  ################################
+        cv2.imwrite('/root/MCResult/TestResult_prunning0.png', imageLine)  ################################
 
         # print(pruned_x_points)
         

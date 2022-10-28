@@ -56,7 +56,7 @@ class ControllerNode(Node):
         self.qosProfileGen()
         self.declare_publisher_px4()
         self.declare_subscriber_px4()
-        self.declare_service_gazebo()
+        # self.declare_service_gazebo()
         #self.RequestMapGeneration()
         
         # Offboard Period
@@ -221,36 +221,35 @@ class ControllerNode(Node):
         else : 
             pass
         if self.InitialPositionFlag == True:
-            # if self.map_generation_flag is True :
-            #     map_service = MapService()
-            #     map_service.RequestMapGeneration(self.map_generation_flag)
-            #     rclpy.spin_until_future_complete(map_service, map_service.future)
-            #     if map_service.future.done():
-            #         try : 
-            #             map_service.result = map_service.future.result()
-            #         except Exception as e:
-            #             map_service.get_logger().info(
-            #                 'Service call failed %r' % (e,))
-            #         else :
-            #             if map_service.result.map_sequence_init is True :
-            #                 self.map_generation_flag = False
-            #                 self.path_planning_flag = True
-            #                 # self.path_following_gpr_flag = True
-            #                 # self.collision_avoidance_flag = True
-            #             else :
-            #                 pass    
-            #         finally : 
-            #             map_service.destroy_node()
-            #     else : 
-            #         self.get_logger().warn("===== Map Generation Module Can't Response =====")
-            # else : 
-            #     pass
-            ##     Path Planning MODULE
+            if self.map_generation_flag is True :
+                # map_service = MapService()
+                # map_service.RequestMapGeneration(self.map_generation_flag)
+                # rclpy.spin_until_future_complete(map_service, map_service.future)
+                # if map_service.future.done():
+                #     try : 
+                #         map_service.result = map_service.future.result()
+                #     except Exception as e:
+                #         map_service.get_logger().info(
+                #             'Service call failed %r' % (e,))
+                #     else :
+                #         if map_service.result.map_sequence_init is True :
+                #             self.map_generation_flag = False
+                #             self.path_planning_flag = True
+                #             # self.path_following_gpr_flag = True
+                #             # self.collision_avoidance_flag = True
+                #         else :
+                #             pass    
+                #     finally : 
+                #         map_service.destroy_node()
+                # else : 
+                #     self.get_logger().warn("===== Map Generation Module Can't Response =====")
+                # Overriden since we use AirSIm
+                self.map_generation_flag = False
+                self.path_planning_flag = True
+            else : 
+                pass
 
-            # Overriden since we use airsim
-            self.map_generation_flag = False
-            self.path_planning_flag = True
-
+            #     Path Planning MODULE
             if self.path_planning_flag is True :
                 planning_service = PathPlanningService()
                 planning_service.RequestPathPlanning(self.start_point, self.goal_point)
@@ -519,20 +518,20 @@ class ControllerNode(Node):
         # Init Camera Subscriber
         # self.CameraSubscriber_ = self.create_subscription(Image, '/realsense_d455_RGB/image', self.CameraCallback, self.QOS_Sub_Sensor)
         # Init Lidar Subscriber
-        self.LidarSubscriber_ = self.create_subscription(LaserScan, '/rplidar_a3/laserscan', self.LidarCallback, QoSProfile(depth=10, reliability=QoSReliabilityPolicy.BEST_EFFORT))
+        self.LidarSubscriber_ = self.create_subscription(LaserScan, '/airsim_node/Typhoon_1/lidar/RPLIDAR_A3', self.LidarCallback, QoSProfile(depth=10, reliability=QoSReliabilityPolicy.BEST_EFFORT))
         print("====== gazebo Subscriber Open ======")    
 
-    def declare_service_gazebo(self):
-        # init Gazebo Client
-        self.ResetWorldClient = self.create_client(Empty, '/reset_world')
-        self.ResetWorldClientRequest = Empty.Request()
-        # while not self.ResetWorldClient.wait_for_service(timeout_sec=1.0):
-        #    self.get_logger().info('service not available, waiting again...')
-        self.PauseClient = self.create_client(Empty, '/pause_physics')
-        self.PauseClientRequest = Empty.Request()
-        self.UnpauseClient = self.create_client(Empty, '/unpause_physics')
-        self.UnpauseClientRequest = Empty.Request()
-        print("====== gazebo Service Open ======")    
+    # def declare_service_gazebo(self):
+    #     # init Gazebo Client
+    #     self.ResetWorldClient = self.create_client(Empty, '/reset_world')
+    #     self.ResetWorldClientRequest = Empty.Request()
+    #     # while not self.ResetWorldClient.wait_for_service(timeout_sec=1.0):
+    #     #    self.get_logger().info('service not available, waiting again...')
+    #     self.PauseClient = self.create_client(Empty, '/pause_physics')
+    #     self.PauseClientRequest = Empty.Request()
+    #     self.UnpauseClient = self.create_client(Empty, '/unpause_physics')
+    #     self.UnpauseClientRequest = Empty.Request()
+    #     print("====== gazebo Service Open ======")    
 
 
     def TimesyncCallback(self, msg):
