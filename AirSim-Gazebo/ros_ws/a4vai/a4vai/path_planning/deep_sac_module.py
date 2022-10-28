@@ -294,6 +294,11 @@ class SAC:
 
                 if collisionCheck:
                     if i == wp_index_pre - 1:
+                        # EMERGENCY MODIFICATIONS
+                        wp_candidate = origin_wp[i]
+                        wp_index = origin_wp.index(wp_candidate)
+                        pruned_wp.append(wp_candidate)
+                        wp_index_pre = wp_index
                         collision = True
                         break
 
@@ -327,7 +332,8 @@ class SAC:
             
             if collision:
                 # print("pruning is not availabe")
-                break
+                # EMERGENCY MODIFICATION
+                # break
 
         pruned_wp = list(reversed(pruned_wp))
         pruned_wp.append(origin_wp[-1])
@@ -425,8 +431,8 @@ class SAC:
         # print("SAC-Pruning 시간", TimeEnd - TimeStart)
         # print("SAC-Pruning Cost", Cost)
         
-        # print("SAC-Pruning x-waypoints", prunedNew_x_points)
-        # print("SAC-Pruning y-waypoints", prunedNew_y_points)
+        print("SAC-Pruning x-waypoints", prunedNew_x_points)
+        print("SAC-Pruning y-waypoints", prunedNew_y_points)
         # print("SAC-Pruning z-waypoints", prunedNew_z_points)
 
         return prunedNew_x_points, prunedNew_y_points, prunedNew_z_points
