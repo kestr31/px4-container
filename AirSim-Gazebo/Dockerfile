@@ -140,6 +140,7 @@ COPY --chown=1001:1001 AirSim-Gazebo/models/AirSim/typhoon_h480/TyphoonH480.json
 
 RUN \
 	rm -rf Gazebo/gazebo_ros \
+	&& mkdir /root/MCResult \
 	&& chmod +x /home/user/ForestDeploy/ForestDeploy.sh 
 
 RUN \
