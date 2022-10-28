@@ -64,7 +64,7 @@ class ControllerNode(Node):
         # self.TestTimer = self.create_timer(self.TestPeriod, self.TestCallback)
         self.OffboardTimer_attitude = self.create_timer(self.OffboardPeriod_AttCmd, self.OffboardControl_AttCmd)
         self.OffboardTimer_velocity = self.create_timer(self.OffboardPeriod_VelCmd, self.OffboardControl_VelCmd)
-        self.OffboardTimer_Position = self.create_timer(self.OffboardPeriod_PosCmd, self.OffboardControl_PosCmd)
+        # self.OffboardTimer_Position = self.create_timer(self.OffboardPeriod_PosCmd, self.OffboardControl_PosCmd)
 
         self.PF_Att2Control_Subscriber_ = self.create_subscription(PFAtt2Control, '/pf_att_2_control', self.PF_Att2Control_callback, self.QOS_Sub_Sensor)
         self.CA2ControlSubscriber_ = self.create_subscription(CA2Control, '/ca_2_control', self.CA2Control_callback, self.QOS_Sub_Sensor)
