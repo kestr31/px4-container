@@ -102,7 +102,7 @@ class PFGuidModule(Node):
     def waypoint_index_calculator(self):
         if np.sqrt((self.x - self.PlannedX[self.PlannedIndex])**2 + (self.y - self.PlannedY[self.PlannedIndex]) ** 2) < 3.0:
             self.PlannedIndex += 1
-            # print("Waypoint index ++")
+            print("Waypoint index ++")
         else : 
             pass
         
