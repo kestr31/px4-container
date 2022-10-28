@@ -5,7 +5,7 @@ from math import ceil
 # private libs.
 from .BaseModules.ParamsOffBoardCtrl import DataMPPI
 
-class PF_GPR ():
+class PF_GPR():
     def __init__(self) -> None:
         
         self.MPPIParams     =   DataMPPI()

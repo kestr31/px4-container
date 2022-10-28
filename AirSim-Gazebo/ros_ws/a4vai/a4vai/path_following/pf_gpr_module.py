@@ -20,7 +20,6 @@ from rclpy.qos import QoSReliabilityPolicy
 from rclpy.qos import qos_profile_sensor_data
 from px4_msgs.msg import EstimatorStates
 
-
 from .PathFollowing.PF_GPR import PF_GPR
 
 from px4_msgs.msg import Timesync
