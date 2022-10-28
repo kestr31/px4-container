@@ -142,8 +142,8 @@ class ControllerNode(Node):
         self.InitialPosition = [0.0, 0.0, -5.0]
 
         
-        self.start_point = [0.0, 0.0]
-        self.goal_point = [4999.0, 4999.0]
+        self.start_point = [1.0, 1.0]
+        self.goal_point = [1999.0, 1999.0]
         
         self.PP_response_timestamp = 0
         
