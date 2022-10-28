@@ -74,7 +74,7 @@ COPY AirSim-Gazebo/ros2/airsim_ros_wrapper.cpp /root/AirSim/ros2/src/airsim_ros_
 WORKDIR /root/AirSim/ros2
 
 RUN source /opt/ros/galactic/setup.bash \
-	&& colcon build \
+	&& colcon build --symlink-install \
 		--cmake-args -DCMAKE_C_COMPILER=gcc-8 \
 		--cmake-args -DCMAKE_CXX_COMPILER=g++-8 \
 		--cmake-args -DCMAKE_BUILD_TYPE=Debug
