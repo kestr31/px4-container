@@ -54,7 +54,7 @@ def main():
     print(f"Start creating {args.asset_name}")
     startTime = time.time()
 
-    n = 120
+    n = 30
     t1 = threading.Thread(target=genObj, args=(args.asset_name,args.region,1, n))
     t2 = threading.Thread(target=genObj, args=(args.asset_name,args.region,n+1, 2*n))
     t3 = threading.Thread(target=genObj, args=(args.asset_name,args.region,2*n+1, 3*n))
