@@ -74,6 +74,7 @@ sleep 1s
 # Copy Gnerated Map to Process in Path-Planning Directory
 echo "Found generated map! Copying to RRT directory"
 # mkdir /root/ros_ws/src/a4vai/a4vai/path_planning/Map &&
+mkdir /root/ros_ws/src/a4vai/a4vai/path_planning/Map
 cp $mapImg /root/ros_ws/src/a4vai/a4vai/path_planning/Map/RawImage.png
 sleep 5s
 

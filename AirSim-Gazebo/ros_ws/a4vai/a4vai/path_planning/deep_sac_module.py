@@ -110,7 +110,8 @@ class SAC:
         ############### Map 회전 방향 확인 필요 ################
         # RawImage = Map
         RawImage = (cv2.imread("/root/ros_ws/src/a4vai/a4vai/path_planning/Map/RawImage.png", cv2.IMREAD_GRAYSCALE))
-        RawImage2 = cv2.flip(RawImage, 0)
+        RawImageNeo =cv2.rotate(RawImage, cv2.ROTATE_90_CLOCKWISE)
+        RawImage2 = cv2.flip(RawImageNeo, 0)
         Image_New = np.uint8(np.uint8((255 - RawImage2) / 255))
         # Image_New = np.zeros((MapSize, MapSize))
 
