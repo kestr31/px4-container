@@ -46,7 +46,7 @@ services:
       px4-sitl-as-gz:
         ipv4_address: 172.21.0.5
     container_name: sitl-as
-    image: kestr3l/px4:airsimg-gpu-0.0.3
+    image: kestr3l/px4:airsimg-gpu-0.0.3e
     deploy:
       resources:
         reservations:
@@ -108,7 +108,7 @@ services:
       px4-sitl-as-gz:
         ipv4_address: 172.21.0.6
     container_name: sitl-gz-px4
-    image: kestr3l/px4:airsimg-gpu-0.0.3
+    image: kestr3l/px4:airsimg-gpu-0.0.3e
     deploy:
       resources:
         reservations:

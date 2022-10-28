@@ -295,10 +295,10 @@ class SAC:
                 if collisionCheck:
                     if i == wp_index_pre - 1:
                         # EMERGENCY MODIFICATIONS
-                        wp_candidate = origin_wp[i]
-                        wp_index = origin_wp.index(wp_candidate)
-                        pruned_wp.append(wp_candidate)
-                        wp_index_pre = wp_index
+                        # wp_candidate = origin_wp[i]
+                        # wp_index = origin_wp.index(wp_candidate)
+                        # pruned_wp.append(wp_candidate)
+                        # wp_index_pre = wp_index
                         collision = True
                         break
 
@@ -333,7 +333,7 @@ class SAC:
             if collision:
                 # print("pruning is not availabe")
                 # EMERGENCY MODIFICATION
-                # break
+                break
 
         pruned_wp = list(reversed(pruned_wp))
         pruned_wp.append(origin_wp[-1])
