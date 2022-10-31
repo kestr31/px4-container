@@ -48,7 +48,7 @@ else
 
 	# Spawn Pine Tree in square area of (-240,-240) to (240,240)
 	echo "Simulator startup! Generating Objects"
-	python3 /root/AirSim/python/spawnObject.py -a Pine_01 -r 240 240
+	python3 /root/AirSim/python/spawnObject.py -a Pine_01 -n 10 -r 240 240 
 	sleep 10s
 
 	# After Starting Up Airsim, Generate Flag File for Notification
@@ -72,7 +72,7 @@ else
 	echo " / /  / / ___ |/ ____/ /_/ / /___/ /|  /   "
 	echo "/_/  /_/_/  |_/_/    \____/_____/_/ |_/    "
 
-	cp $mapImg /root/shared/Map.png
+	mogrify -resize 5000x5000 /home/user/ForestDeploy/ForestDeploy/result.png && cp $mapImg /root/shared/Map.png
 
 	# Run MAVLink Router for Communication with QGC
 	echo ">>>>>>>>>>>>>INITIALIZING MAVLINK ROUTER FOR QGC CONNECTION<<<<<<<<<<<"
