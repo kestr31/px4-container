@@ -9,3 +9,5 @@ docker exec -it sitl-gz-px4 zsh -c "source /root/.zshrc ; ros2 run a4vai JBNU_mo
 docker exec -it sitl-gz-px4 zsh -c "source /root/.zshrc ; ros2 run a4vai controller"
 
 clear
+
+docker exec -it sitl-gz-px4 zsh -c "source /root/.zshrc ; ros2 topic echo /waypoint_indx"
