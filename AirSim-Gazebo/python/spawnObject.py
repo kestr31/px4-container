@@ -45,7 +45,7 @@ def main():
                           help="Unreal asset to create (string)", metavar="ASSET")
     required.add_argument("-r", "--region", dest="region",nargs='+',type=float,
                           help="Target region to create objects ([x,y])", metavar="REGION")
-    optional.add_argument("-n", "--number", dest="output_file",
+    required.add_argument("-n", "--number", dest="nobject",type=int,
                           help="Number of assets to create (int). If not set, script will create only 1 of it",
                           metavar="NUM", default=1)
 
@@ -53,32 +53,34 @@ def main():
 
     print(f"Start creating {args.asset_name}")
     startTime = time.time()
+    print(args.nobject)
 
-    n = 30
-    t1 = threading.Thread(target=genObj, args=(args.asset_name,args.region,1, n))
-    t2 = threading.Thread(target=genObj, args=(args.asset_name,args.region,n+1, 2*n))
-    t3 = threading.Thread(target=genObj, args=(args.asset_name,args.region,2*n+1, 3*n))
-    t4 = threading.Thread(target=genObj, args=(args.asset_name,args.region,3*n+1, 4*n))
-    t5 = threading.Thread(target=genObj, args=(args.asset_name,args.region,4*n+1, 5*n))
+    if args.nobject > 0:
+        n = args.nobject
+        t1 = threading.Thread(target=genObj, args=(args.asset_name,args.region,1, n))
+        t2 = threading.Thread(target=genObj, args=(args.asset_name,args.region,n+1, 2*n))
+        t3 = threading.Thread(target=genObj, args=(args.asset_name,args.region,2*n+1, 3*n))
+        t4 = threading.Thread(target=genObj, args=(args.asset_name,args.region,3*n+1, 4*n))
+        t5 = threading.Thread(target=genObj, args=(args.asset_name,args.region,4*n+1, 5*n))
 
-    t1.start()
-    t2.start()
-    t3.start()
-    t4.start()
-    t5.start()
+        t1.start()
+        t2.start()
+        t3.start()
+        t4.start()
+        t5.start()
 
-    t1.join()
-    t2.join()
-    t3.join()
-    t4.join()
-    t5.join()
+        t1.join()
+        t2.join()
+        t3.join()
+        t4.join()
+        t5.join()
 
-    client = airsim.VehicleClient()
-    objNum = client.simListSceneObjects(name_regex=f"{args.asset_name}_airsim_.*")
-    ellapsed = round(time.time() - startTime)
+        client = airsim.VehicleClient()
+        objNum = client.simListSceneObjects(name_regex=f"{args.asset_name}_airsim_.*")
+        ellapsed = round(time.time() - startTime)
 
-    print(f"Total of {len(objNum)} objects created!")
-    print(f"This took {ellapsed} seconds")
+        print(f"Total of {len(objNum)} objects created!")
+        print(f"This took {ellapsed} seconds")
 
 if __name__ == "__main__":
     main()
