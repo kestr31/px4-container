@@ -424,7 +424,7 @@ class ControllerNode(Node):
                 w, x, y, z = self.Euler2Quaternion(self.TargetAttitude[0],self.TargetAttitude[1],self.TargetAttitude[2])
                 self.TargetQuaternionCmd = [w, x, y, z]
                 self.TargetVelYawCmd = self.TargetYaw
-                self.SetAttitude(self.TargetQuaternionCmd, [0.0, 0.0, 0.0], self.TargetThrustCmd, 0.0)
+                self.SetAttitude(self.TargetQuaternionCmd, [0.0, 0.0, 0.0], self.TargetThrustCmd, np.NaN)
                 self.get_logger().warn("===== Use Open Attitude Command =====")
                 # print("Attitude = ", str(np.array(self.TargetAttitude) * 57.3))
                 # print("Thrust = ", str(self.TargetThrustCmd))
