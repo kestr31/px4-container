@@ -79,7 +79,7 @@
 						}
 					],
 					"Gimbal": {
-					  "Stabilization": 1,
+					  "Stabilization": 0,
 					  "Pitch": 0, "Roll": 0
 					},
 					"X": 0.076, "Y": 0.0115, "Z": 0.038,
@@ -126,10 +126,10 @@
 						}
 					],
 					"Gimbal": {
-					  "Stabilization": 1,
+					  "Stabilization": 0,
 					  "Pitch": 0, "Roll": 0
 					},
-					"X": 0.076, "Y": -0.01, "Z": 0.038,
+					"X": 0.3, "Y": -0.01, "Z": 0.038,
 					"Pitch": 0, "Roll": 0, "Yaw": 0
 				}
 			}
