@@ -31,7 +31,6 @@ services:
       # - ${HOME}/gitcodes/px4-container/AirSim/models/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
       - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-sim.sh:/usr/local/bin/entrypoint.sh
       # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/LinuxNoEditor_temp:/home/user/ForestDeploy
-      # - ${HOME}/gitcodes/px4-container/AirSim/python/moveUAV.py:/root/AirSim/python/moveUAV.py
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       #- /mnt/wslg:/mnt/wslg
@@ -80,7 +79,7 @@ services:
       # - HEADLESS=1
       # - DEBUG_ENTRYPOINT=1
       # - PX4_SITL_DEBUGGER=ide
-      - REBUILD_RPKG=1
+      # - REBUILD_RPKG=1
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
     volumes:
       # -----------DEFAULT VALUE DO NOT MODIFY-----------
@@ -90,6 +89,7 @@ services:
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
       - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-px4.sh:/usr/local/bin/entrypoint.sh
       - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/ros_ws:/root/ros_ws/src
+      # - ${HOME}/Pictures/MCResult:/root/MCResult
       # - /home/merlin/gitcodes/px4-container/AirSim-Gazebo/python/spawnObject.py:/root/AirSim/python/spawnObject.py
       # - ${HOME}/gitcodes/px4-container/Gazebo/models:/root/PX4-Autopilot/Tools/sitl_gazebo/models
       # - ${HOME}/gitcodes/px4-container/Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
@@ -121,7 +121,7 @@ services:
       - DISPLAY=$DISPLAY
       - WAYLAND_DISPLAY=$WAYLAND_DISPLAY
       - QT_NO_MITSHM=1 
-      - XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR
+      - XDG_RUNTIME_DIR=/tmp
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       # - LD_LIBRARY_PATH=/usr/lib/wsl/lib
     volumes:
