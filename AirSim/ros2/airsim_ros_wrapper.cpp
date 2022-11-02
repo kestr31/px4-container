@@ -234,31 +234,31 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                 switch (sensor_setting->sensor_type) {
                 case SensorBase::SensorType::Barometer: {
                     SensorPublisher<airsim_interfaces::msg::Altimeter> sensor_publisher =
-                        create_sensor_publisher<airsim_interfaces::msg::Altimeter>("Barometer", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/altimeter/" + sensor_name, 10);
+                        create_sensor_publisher<airsim_interfaces::msg::Altimeter>("Barometer", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/altimeter/" + sensor_name, 5);
                     vehicle_ros->barometer_pubs_.emplace_back(sensor_publisher);
                     break;
                 }
                 case SensorBase::SensorType::Imu: {
                     SensorPublisher<sensor_msgs::msg::Imu> sensor_publisher =
-                        create_sensor_publisher<sensor_msgs::msg::Imu>("Imu", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/imu/" + sensor_name, 10);
+                        create_sensor_publisher<sensor_msgs::msg::Imu>("Imu", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/imu/" + sensor_name, 5);
                     vehicle_ros->imu_pubs_.emplace_back(sensor_publisher);
                     break;
                 }
                 case SensorBase::SensorType::Gps: {
                     SensorPublisher<sensor_msgs::msg::NavSatFix> sensor_publisher =
-                        create_sensor_publisher<sensor_msgs::msg::NavSatFix>("Gps", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/gps/" + sensor_name, 10);
+                        create_sensor_publisher<sensor_msgs::msg::NavSatFix>("Gps", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/gps/" + sensor_name, 5);
                     vehicle_ros->gps_pubs_.emplace_back(sensor_publisher);
                     break;
                 }
                 case SensorBase::SensorType::Magnetometer: {
                     SensorPublisher<sensor_msgs::msg::MagneticField> sensor_publisher =
-                        create_sensor_publisher<sensor_msgs::msg::MagneticField>("Magnetometer", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/magnetometer/" + sensor_name, 10);
+                        create_sensor_publisher<sensor_msgs::msg::MagneticField>("Magnetometer", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/magnetometer/" + sensor_name, 5);
                     vehicle_ros->magnetometer_pubs_.emplace_back(sensor_publisher);
                     break;
                 }
                 case SensorBase::SensorType::Distance: {
                     SensorPublisher<sensor_msgs::msg::Range> sensor_publisher =
-                        create_sensor_publisher<sensor_msgs::msg::Range>("Distance", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/distance/" + sensor_name, 10);
+                        create_sensor_publisher<sensor_msgs::msg::Range>("Distance", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/distance/" + sensor_name, 5);
                     vehicle_ros->distance_pubs_.emplace_back(sensor_publisher);
                     break;
                 }
@@ -269,7 +269,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                     append_static_lidar_tf(vehicle_ros.get(), sensor_name, params);
 
                     SensorPublisher<sensor_msgs::msg::PointCloud2> sensor_publisher =
-                        create_sensor_publisher<sensor_msgs::msg::PointCloud2>("Lidar", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/lidar/" + sensor_name, 10);
+                        create_sensor_publisher<sensor_msgs::msg::PointCloud2>("Lidar", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/lidar/" + sensor_name, 5);
                     vehicle_ros->lidar_pubs_.emplace_back(sensor_publisher);
                     lidar_cnt += 1;
                     break;
