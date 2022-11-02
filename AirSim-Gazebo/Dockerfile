@@ -74,27 +74,25 @@ COPY AirSim-Gazebo/ros2/airsim_ros_wrapper.cpp /root/AirSim/ros2/src/airsim_ros_
 WORKDIR /root/AirSim/ros2
 
 RUN source /opt/ros/galactic/setup.bash \
-	&& colcon build --symlink-install \
+	&& colcon build \
 		--cmake-args -DCMAKE_C_COMPILER=gcc-8 \
 		--cmake-args -DCMAKE_CXX_COMPILER=g++-8 \
 		--cmake-args -DCMAKE_BUILD_TYPE=Debug
 
+FROM stage_deps as stage_rnode
 
-# FROM stage_deps as stage_rnode
+SHELL ["/bin/bash", "-o", "pipefail", "-c"] 
 
-# SHELL ["/bin/bash", "-o", "pipefail", "-c"] 
+RUN \
+	rm -rf Gazebo/ros_ws
 
-# RUN \
-# 	rm -rf Gazebo/ros_ws
+COPY AirSim-Gazebo/ros_ws /root/ros_ws/src
 
-# COPY AirSim-Gazebo/ros_ws /root/ros_ws/src
-
-# RUN \
-# 	colcon build \
-# 		--build-base ~/ros_ws/build \
-# 		--install-base ~/ros_ws/install \
-# 		--base-paths ~/ros_ws/src \
-# 		--symlink-install
+RUN source /opt/ros/galactic/setup.bash \
+	&& colcon build \
+		--build-base ~/ros_ws/build \
+		--install-base ~/ros_ws/install \
+		--base-paths ~/ros_ws/src
 
 
 FROM stage_deps as stage_px4sitl
@@ -130,6 +128,7 @@ COPY --from=stage_airsim /root/AirSim/ros2 /root/AirSim/ros2
 COPY --from=stage_airsim /root/.local /root/.local
 
 # COPY --from=stage_rnode /root/ros_ws /root/ros_ws
+COPY AirSim-Gazebo/ros_ws /root/ros_ws/src
 
 COPY AirSim-Gazebo/python /root/AirSim/python
 COPY scripts /root/tools
