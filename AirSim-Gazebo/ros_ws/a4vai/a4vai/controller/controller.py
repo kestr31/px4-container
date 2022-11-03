@@ -152,8 +152,8 @@ class ControllerNode(Node):
         self.InitialPosition = [0.0, 0.0, -5.0]
 
         
-        self.start_point = [1.0, 1.0]
-        self.goal_point = [4999.0, 4999.0]
+        self.start_point = [10.0, 10.0]
+        self.goal_point = [4990.0, 4990.0]
         
         self.PP_response_timestamp = 0
         
@@ -199,7 +199,7 @@ class ControllerNode(Node):
         self.gpr_output = []
         self.gpr_output_data = []
         self.gpr_output_index = 0
-        self.flag_guid_param = 2
+        self.flag_guid_param = 3
 
         self.request_path_plnning_flag = True
         
@@ -212,7 +212,6 @@ class ControllerNode(Node):
         
 #################################################################################################################
     def AlgorithmCallback(self):
-        print("Algorithm ")
         self.OffboardControlModeCallback()
         if self.OffboardCount == self.OffboardCounter:
             self.offboard()
@@ -333,8 +332,7 @@ class ControllerNode(Node):
                             self.path_following_flag = True
                         else :
                             pass    
-                    finally : 
-                        following_guid_service.destroy_node()
+
                 else :
                     self.get_logger().warn("===== Path Following Guid Module Can't Response =====")
             else : 
@@ -367,8 +365,7 @@ class ControllerNode(Node):
                             self.path_following_complete = True
                         else :
                             pass    
-                    finally : 
-                        following_service.destroy_node()
+
                 else : 
                     pass
                     # self.get_logger().warn("===== Path Following Setpoint Module Can't Response =====")
@@ -398,13 +395,16 @@ class ControllerNode(Node):
                             self.collision_avoidance_complete = True
                         else :
                             pass    
-                    finally : 
-                        collision_avoidance_service.destroy_node()
+
                 else :
                     pass
                     # self.get_logger().warn("===== Collision Avoidance Module Can't Response =====")
             else : 
                 pass
+
+
+
+
         else:
             self.arm()
             
@@ -461,10 +461,7 @@ class ControllerNode(Node):
                 self.TargetPositionCmd = self.TargetPosition
                 self.TargetVelYawCmd = self.TargetYaw
                 self.SetPosition(self.TargetPositionCmd, self.TargetVelYawCmd)
-                # self.get_logger().warn("===== Use Open Position Command =====")
-                # print("Attitude = ", str(np.array(self.TargetAttitude) * 57.3))
-                # print("Thrust = ", str(self.TargetThrustCmd))
-                # self.SetAttitude(self.TargetQuaternionCmd, [0.0, 0.0, 0.0], 0.36, 0.0)
+
                 pass
             else : 
                 pass
@@ -764,16 +761,20 @@ class ControllerNode(Node):
         gen =point_cloud2.read_points(pc_msg, field_names = ('x', 'y', 'z'), skip_nans =True)
         gen_array = np.array(list(gen))
         if np.size(gen_array) == 0 :
-            gen_array = np.array([[100, 200, 300], [100, 200, 300], [100, 200, 300]])
+            gen_array = np.array([[300, 300, 300], [300, 300, 300], [300, 300, 300]])
         x = gen_array[:,0]
         y = gen_array[:,1]
         dist = np.sqrt(x **2 + y ** 2)
         min_dist = np.min(dist)
         # print(gen_array[:,0])
-        min_dist = 5
-        if min_dist < 10:
+        # min_dist = 5
+        # if self.z <-4.0 :
+        if min_dist < 4:
             self.ObstacleFlag = True
-
+        else : 
+            self.ObstacleFlag = False
+        # else : 
+        #     pass
 
 
 

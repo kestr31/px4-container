@@ -432,9 +432,19 @@ class SAC:
         # print("SAC-Pruning 시간", TimeEnd - TimeStart)
         # print("SAC-Pruning Cost", Cost)
         
+        
+        # print("SAC-Pruning z-waypoints", prunedNew_z_points)
+        prunedNew_x_points_array = np.array(prunedNew_x_points)
+        prunedNew_y_points_array = np.array(prunedNew_y_points)
+        prunedNew_x_points_array = prunedNew_x_points_array / 10.0
+        prunedNew_y_points_array = prunedNew_y_points_array / 10.0
+
+        prunedNew_y_points = prunedNew_y_points_array.tolist()
+        prunedNew_x_points = prunedNew_x_points_array.tolist()
+
         print("SAC-Pruning x-waypoints", prunedNew_x_points)
         print("SAC-Pruning y-waypoints", prunedNew_y_points)
-        # print("SAC-Pruning z-waypoints", prunedNew_z_points)
+
 
         return prunedNew_y_points, prunedNew_x_points, prunedNew_z_points
     

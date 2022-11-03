@@ -28,7 +28,6 @@ class PF_GUID_PARAM():
         pass
 
     def PF_GUID_PARAM_Module(self, PlannedX, PlannedY, PlannedZ, PlannnedIndex, Pos, Vn, AngEuler, GPR_output, outNDO, Flag_Guid_Param):
-        print("In function")
         ### Todo kdh
         # Flag_Guid_Param = 2
         outNDO_ = np.array(outNDO)
