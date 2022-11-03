@@ -41,16 +41,13 @@ class JBNU_Collision():
         input_name = ort_session.get_inputs()[0].name
         Act = ort_session.run(None, {input_name:Image.astype(np.float32)})
         vx = Act[0][0][0]
-        # vy = 0
-        # vz = 0
-        # # vyaw = 0
         vy = Act[0][0][1]
         vz = Act[0][0][2]
         vyaw = Act[0][0][3] * 5
         print(vx,'\t',vy,'\t',vz,'\t',vyaw)
         
         
-        return float(vx), float(vy), - float(vz), - float(vyaw)
+        return float(vx), float(vy), float(vz), - float(vyaw)
 
         
 

@@ -37,8 +37,8 @@ from px4_msgs.msg import VehicleAngularVelocity
 #   PX4 MSG - Pub
 from px4_msgs.msg import VehicleCommand
 from px4_msgs.msg import OffboardControlMode
-from px4_msgs.msg import VehicleLocalPositionSetpoint
-# from px4_msgs.msg import TrajectorySetpoint
+# from px4_msgs.msg import VehicleLocalPositionSetpoint
+from px4_msgs.msg import TrajectorySetpoint
 from px4_msgs.msg import Timesync
 from px4_msgs.msg import VehicleAttitudeSetpoint
 from rclpy.qos import ReliabilityPolicy, QoSProfile, LivelinessPolicy, DurabilityPolicy, HistoryPolicy
@@ -110,7 +110,11 @@ class ControllerNode(Node):
         self.vel_cmd_z = 0.0
         self.vel_cmd_yaw = 0.0
         
-        self.z_NDO_past = []
+        # self.z_NDO_past = []
+        self.vel_cmd_body = [0.0, 0.0, 0.0]
+        self.vel_cmd_ned = [0.0, 0.0, 0.0]
+        self.DCM_bn = np.zeros((3,3))
+        self.DCM_nb = np.zeros((3,3))
 
 
         # Controller Period
@@ -421,7 +425,7 @@ class ControllerNode(Node):
         else:
             self.arm()
             
-            self.Takeoff()
+            # self.Takeoff()
             
         if self.OffboardCount < self.OffboardCounter:
             self.OffboardCount = self.OffboardCount + 1
@@ -450,7 +454,13 @@ class ControllerNode(Node):
     def OffboardControl_VelCmd(self):
         if self.collision_avoidance_complete is True : 
             if self.ObstacleFlag is True :
-                self.TargetVelocityCmd = [self.vel_cmd_x, self.vel_cmd_y, self.vel_cmd_z]
+                # self.TargetVelocityCmd = [self.vel_cmd_x, self.vel_cmd_y, self.vel_cmd_z]
+                self.DCM_nb = self.DCM(self.phi, self.theta, self.psi)
+                self.DCM_bn = self.DCM_trans(self.DCM_nb)
+                self.BodytoNED()
+                self.TargetVelocityCmd = [self.vel_cmd_ned[0], self.vel_cmd_ned[1], self.vel_cmd_ned[2]]
+                print(self.vel_cmd_ned[0],self.vel_cmd_ned[1],self.vel_cmd_ned[2])
+                # self.TargetVelocityCmd = [10.0, 1.0, -5.0]
                 self.TargetVelYawCmd = self.vel_cmd_yaw
                 
                 self.get_logger().info("===== Use Open Velocity Command =====")
@@ -515,8 +525,8 @@ class ControllerNode(Node):
         #   init PX4 MSG Publisher
         self.VehicleCommandPublisher_ = self.create_publisher(VehicleCommand, '/fmu/vehicle_command/in', self.QOS_Sub_Sensor)
         self.OffboardControlModePublisher_ = self.create_publisher(OffboardControlMode, '/fmu/offboard_control_mode/in', self.QOS_Sub_Sensor)
-        # self.TrajectorySetpointPublisher_ = self.create_publisher(TrajectorySetpoint, '/fmu/trajectory_setpoint/in', self.QOS_Sub_Sensor)
-        self.VehicleLocalPositionPublisher_ = self.create_publisher(VehicleLocalPositionSetpoint, '/fmu/vehicle_local_position_setpoint/in', self.QOS_Sub_Sensor)
+        self.TrajectorySetpointPublisher_ = self.create_publisher(TrajectorySetpoint, '/fmu/trajectory_setpoint/in', self.QOS_Sub_Sensor)
+        # self.VehicleLocalPositionPublisher_ = self.create_publisher(VehicleLocalPositionSetpoint, '/fmu/vehicle_local_position_setpoint/in', self.QOS_Sub_Sensor)
         self.VehicleAttitudeSetpointPublisher_ = self.create_publisher(VehicleAttitudeSetpoint, '/fmu/vehicle_attitude_setpoint/in', self.QOS_Sub_Sensor)
         #self.VehicleRatesSetpointPublisher_ = self.create_publisher(VehicleRatesSetpoint, '/fmu/vehicle_rates_setpoint/in', self.QOS_Sub_Sensor)
         print("====== px4 Publisher Open ======")
@@ -693,6 +703,30 @@ class ControllerNode(Node):
         z = CosRoll * CosPitch * SinYaw - SinRoll * CosPitch * CosYaw
         
         return w, x, y, z
+
+    def DCM(self, _phi, _theta, _psi):
+        PHI = math.radians(_phi)  
+        THETA = math.radians(_theta)
+        PSI = math.radians(_psi)
+        print(PHI, THETA, PSI)
+
+        mtx_DCM = np.array([[math.cos(PSI)*math.cos(THETA), math.sin(PSI)*math.cos(THETA), -math.sin(THETA)], 
+                            [(-math.sin(PSI)*math.cos(PHI))+(math.cos(PSI)*math.sin(THETA)*math.sin(PHI)), (math.cos(PSI)*math.cos(PHI))+(math.sin(PSI)*math.sin(THETA)*math.sin(PHI)), math.cos(THETA)*math.sin(PHI)], 
+                            [(math.sin(PSI)*math.sin(PHI))+(math.cos(PSI)*math.sin(THETA)*math.cos(PHI)), (-math.cos(PSI)*math.sin(PHI))+(math.sin(PSI)*math.sin(THETA)*math.cos(PHI)), math.cos(THETA)*math.cos(PHI)]])
+       
+        return mtx_DCM
+
+    def DCM_trans(self, mtx_DCM):
+        mtx_DCM_trans = mtx_DCM.T
+        return mtx_DCM_trans
+
+    def BodytoNED(self):
+        vel_cmd_body = np.array([self.vel_cmd_x,self.vel_cmd_y,self.vel_cmd_z])
+        
+        self.vel_cmd_ned =  (self.DCM_bn @ vel_cmd_body).tolist()
+        # print(self.vel_cmd_ned)
+
+        
     
     # VehicleAttitudeSetpoint
     def VehicleAttitudeSetpointCallback(self, SetQuaternion, BodyRate, SetThrust, SetYawRate):
@@ -715,7 +749,7 @@ class ControllerNode(Node):
         self.VehicleAttitudeSetpointPublisher_.publish(msg)
 
     def VehicleLocalPositionSetpointCallback(self, SetPosition, SetVelocity, SetYaw):
-        msg = VehicleLocalPositionSetpoint()
+        msg = TrajectorySetpoint()
         msg.x = SetPosition[0]
         msg.y = SetPosition[1]
         msg.z = SetPosition[2]
@@ -727,11 +761,11 @@ class ControllerNode(Node):
         msg.acceleration = [np.NaN,np.NaN,np.NaN]
         msg.jerk = [np.NaN,np.NaN,np.NaN]
         msg.thrust = [np.NaN,np.NaN,np.NaN]
-        self.VehicleLocalPositionPublisher_.publish(msg)
+        self.TrajectorySetpointPublisher_.publish(msg)
 
         
     def TrajectorySetpointCallback(self, SetPosition, SetVelocity, SetYaw):
-        msg = VehicleLocalPositionSetpoint()
+        msg = TrajectorySetpoint()
         msg.timestamp = self.timestamp_offboard
         msg.x = SetPosition[0]
         msg.y = SetPosition[1]
@@ -741,7 +775,7 @@ class ControllerNode(Node):
         msg.vz = SetVelocity[2]
         msg.yaw = SetYaw
 
-        self.VehicleLocalPositionPublisher_.publish(msg)
+        self.TrajectorySetpointPublisher_.publish(msg)
         
     def LidarCallback(self, pc_msg):
         gen =point_cloud2.read_points(pc_msg, field_names = ('x', 'y', 'z'), skip_nans =True)
