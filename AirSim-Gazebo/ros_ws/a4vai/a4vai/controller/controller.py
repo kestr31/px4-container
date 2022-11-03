@@ -177,7 +177,7 @@ class ControllerNode(Node):
         # self.start_point = []
         # self.goal_point = []
         
-        self.collision_avoidance_flag = True
+        self.collision_avoidance_flag = False
         self.collision_avoidance_complete = False
         
         self.OffboardCount = 0
@@ -204,23 +204,10 @@ class ControllerNode(Node):
         self.request_path_plnning_flag = True
         
         self.declare_subscriber_gazebo()
-        
-        ################################
-        # self.waypoint_x = [194.50006744625216, 825.8771283644521, 1431.8613353993596, 2000.3352614176797, 2397.700009556139, 2730.8000037362776, 2706.3233754062016, 
-        #                    3225.794498676967, 3627.9853373120645, 4127.434997699735, 4470.346028786243]
-        # self.waypoint_y = [36.118291873152884, 144.17673246974937, 309.82613153979173, 537.4419799797172, 922.1794141237731, 1360.298574161542, 2178.636181251442,
-        #                    2407.6458042137847, 2782.003343801756, 3054.981891820806,  3482.83100675065]
-        # self.waypoint_z = [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
-        # # self.wapoint_index = 11
-        # self.gpr_output = [[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],
-        #                    [0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],
-        #                    [0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]]
-        
-        # self.gpr_output_data = list(chain.from_iterable(self.gpr_output))
+
         self.gpr_output_index = 3
         self.outNDO = [0.0,0.0,0.0]
 
-        ######################################
         
         
 #################################################################################################################
@@ -229,7 +216,7 @@ class ControllerNode(Node):
         self.OffboardControlModeCallback()
         if self.OffboardCount == self.OffboardCounter:
             self.offboard()
-            self.InitialPositionFlag = True
+            # self.InitialPositionFlag = True
         else : 
             pass
         if self.InitialPositionFlag == True:
@@ -261,135 +248,131 @@ class ControllerNode(Node):
             else : 
                 pass
 
-            # self.path_planning_flag = False
-            # self.collision_avoidance_flag = True
 
-            # #     Path Planning MODULE
-            # if self.path_planning_flag is True :
-            #     planning_service = PathPlanningService()
-            #     planning_service.RequestPathPlanning(self.start_point, self.goal_point)
-            #     rclpy.spin_until_future_complete(planning_service, planning_service.future)
-            #     if planning_service.future.done():
-            #         try : 
-            #             planning_service.result = planning_service.future.result()
-            #         except Exception as e:
-            #             planning_service.get_logger().info(
-            #                 'Path Planning Service call failed %r' % (e,))
-            #         else :
-            #             planning_service.get_logger().info( "Path Planning Complete!! ")
-            #             if planning_service.result.response_pathplanning is True :
-            #                 self.PP_response_timestamp = planning_service.result.response_timestamp
-            #                 self.waypoint_x = planning_service.result.waypoint_x
-            #                 self.waypoint_y = planning_service.result.waypoint_y
-            #                 self.waypoint_z = planning_service.result.waypoint_z
-            #                 self.path_planning_flag = False
-            #                 self.path_planning_complete = True
-            #                 # self.path_following_gpr_flag = True
-            #                 # self.path_following_guid_flag = True
-            #                 self.collision_avoidance_flag = True
-            #                 # self.path_following_flag =True
-            #             else :
-            #                 pass
-            #         finally : 
-            #             planning_service.destroy_node()
-            #     else : 
-            #         self.get_logger().warn("===== Path Planning Module Can't Response =====")
-            # else : 
-            #     pass
+            #     Path Planning MODULE
+            if self.path_planning_flag is True :
+                planning_service = PathPlanningService()
+                planning_service.RequestPathPlanning(self.start_point, self.goal_point)
+                rclpy.spin_until_future_complete(planning_service, planning_service.future)
+                if planning_service.future.done():
+                    try : 
+                        planning_service.result = planning_service.future.result()
+                    except Exception as e:
+                        planning_service.get_logger().info(
+                            'Path Planning Service call failed %r' % (e,))
+                    else :
+                        planning_service.get_logger().info( "Path Planning Complete!! ")
+                        if planning_service.result.response_pathplanning is True :
+                            self.PP_response_timestamp = planning_service.result.response_timestamp
+                            self.waypoint_x = planning_service.result.waypoint_x
+                            self.waypoint_y = planning_service.result.waypoint_y
+                            self.waypoint_z = planning_service.result.waypoint_z
+                            self.path_planning_flag = False
+                            self.path_planning_complete = True
+                            self.path_following_gpr_flag = True
+                            self.collision_avoidance_flag = True
+                        else :
+                            pass
+                    finally : 
+                        planning_service.destroy_node()
+                else : 
+                    self.get_logger().warn("===== Path Planning Module Can't Response =====")
+            else : 
+                pass
                 
-            #     ###     PF GPR MODULE
-            # if self.path_following_gpr_flag is True :
-            #     following_gpr_service = PathFollowingGPRService()
-            #     following_gpr_service.RequestPathFollowingGPR()
-            #     rclpy.spin_until_future_complete(following_gpr_service, following_gpr_service.future_gpr)
-            #     if following_gpr_service.future_gpr.done():
-            #         try : 
-            #             following_gpr_service.result = following_gpr_service.future_gpr.result()
-            #         except Exception as e:
-            #             following_gpr_service.get_logger().info(
-            #                 'Service call failed %r' % (e,))
-            #         else :
-            #             following_gpr_service.get_logger().info( "Path Following GPR Module Complete!! ")
-            #             if following_gpr_service.result.response_gpr is True :
-            #                 self.PF_response_gpr_timestamp = following_gpr_service.result.response_timestamp
-            #                 #########################################################################################
-            #                 self.path_following_gpr_flag = False
-            #                 self.path_following_gpr_complete = True
-            #                 self.path_following_guid_flag = True
-            #             else :
-            #                 pass    
-            #         finally : 
-            #             following_gpr_service.destroy_node()
-            #     else : 
-            #         self.get_logger().warn("===== Path Following GPR Module Can't Response =====")
-            # else : 
-            #     pass
+                ###     PF GPR MODULE
+            if self.path_following_gpr_flag is True :
+                following_gpr_service = PathFollowingGPRService()
+                following_gpr_service.RequestPathFollowingGPR()
+                rclpy.spin_until_future_complete(following_gpr_service, following_gpr_service.future_gpr)
+                if following_gpr_service.future_gpr.done():
+                    try : 
+                        following_gpr_service.result = following_gpr_service.future_gpr.result()
+                    except Exception as e:
+                        following_gpr_service.get_logger().info(
+                            'Service call failed %r' % (e,))
+                    else :
+                        following_gpr_service.get_logger().info( "Path Following GPR Module Complete!! ")
+                        if following_gpr_service.result.response_gpr is True :
+                            self.PF_response_gpr_timestamp = following_gpr_service.result.response_timestamp
+                            #########################################################################################
+                            self.path_following_gpr_flag = False
+                            self.path_following_gpr_complete = True
+                            self.path_following_guid_flag = True
+                        else :
+                            pass    
+                    finally : 
+                        following_gpr_service.destroy_node()
+                else : 
+                    self.get_logger().warn("===== Path Following GPR Module Can't Response =====")
+            else : 
+                pass
             
 
-            # ##     PF GUID MODULE
-            # if self.path_following_guid_flag is True :
-            #     following_guid_service = PathFollowingGuidService()
-            #     following_guid_service.RequestPathFollowingGuid(self.waypoint_x, self.waypoint_y, self.waypoint_z, self.flag_guid_param)
+            ##     PF GUID MODULE
+            if self.path_following_guid_flag is True :
+                following_guid_service = PathFollowingGuidService()
+                following_guid_service.RequestPathFollowingGuid(self.waypoint_x, self.waypoint_y, self.waypoint_z, self.flag_guid_param)
 
-            #     # rclpy.spin_once(following_guid_service)
-            #     rclpy.spin_until_future_complete(following_guid_service, following_guid_service.future_guid)
-            #     if following_guid_service.future_guid.done():
-            #         try : 
-            #             following_guid_service.result = following_guid_service.future_guid.result()
-            #         except Exception as e:
-            #             following_guid_service.get_logger().info(
-            #                 'Service call failed %r' % (e,))
-            #         else :
-            #             following_guid_service.get_logger().info( "Path Following Guid Module Complete!! ")
-            #             # print(following_guid_service.result.response_guid)
-            #             if following_guid_service.result.response_guid is True :
-            #                 self.PF_response_guid_timestamp = following_guid_service.result.response_timestamp
-            #                 #########################################################################################
-            #                 self.path_following_guid_complete = True
-            #                 self.path_following_guid_flag = False
-            #                 self.path_following_flag = True
-            #             else :
-            #                 pass    
-            #         finally : 
-            #             following_guid_service.destroy_node()
-            #     else :
-            #         self.get_logger().warn("===== Path Following Guid Module Can't Response =====")
-            # else : 
-            #     pass
+                # rclpy.spin_once(following_guid_service)
+                rclpy.spin_until_future_complete(following_guid_service, following_guid_service.future_guid)
+                if following_guid_service.future_guid.done():
+                    try : 
+                        following_guid_service.result = following_guid_service.future_guid.result()
+                    except Exception as e:
+                        following_guid_service.get_logger().info(
+                            'Service call failed %r' % (e,))
+                    else :
+                        following_guid_service.get_logger().info( "Path Following Guid Module Complete!! ")
+                        # print(following_guid_service.result.response_guid)
+                        if following_guid_service.result.response_guid is True :
+                            self.PF_response_guid_timestamp = following_guid_service.result.response_timestamp
+                            #########################################################################################
+                            self.path_following_guid_complete = True
+                            self.path_following_guid_flag = False
+                            self.path_following_flag = True
+                        else :
+                            pass    
+                    finally : 
+                        following_guid_service.destroy_node()
+                else :
+                    self.get_logger().warn("===== Path Following Guid Module Can't Response =====")
+            else : 
+                pass
             
             
-            # ###  PF Attitude Command Module(Setpoint)
-            # if self.path_following_flag is True :
-            #     if self.initFlag_PF_Att_Cmd is True :
-            #         self.initTimeStamp_PF_Att_Cmd = self.timestamp_offboard
-            #         # print("test")
-            #         self.initFlag_PF_Att_Cmd = False
-            #     following_service = PathFollowingService()
-            #     following_service.RequestPathFollowing(self.waypoint_x, self.waypoint_y, self.waypoint_z)
-            #     # rclpy.spin_once(following_service)
-            #     rclpy.spin_until_future_complete(following_service, following_service.future_setpoint)
-            #     if following_service.future_setpoint.done():
-            #         try : 
-            #             following_service.result = following_service.future_setpoint.result()
-            #         except Exception as e:
-            #             following_service.get_logger().info(
-            #                 'Service call failed %r' % (e,))
-            #         else :
-            #             following_service.get_logger().info( "Path Following Setpoint Module Complete!! ")
-            #             # print(following_service.result.response_pathfollowing)
-            #             if following_service.result.response_pathfollowing is True :
-            #                 self.PF_response_setpoint_timestamp = following_service.result.response_timestamp
-            #                 #########################################################################################
-            #                 self.path_following_flag =False
-            #                 self.path_following_complete = True
-            #             else :
-            #                 pass    
-            #         finally : 
-            #             following_service.destroy_node()
-            #     else : 
-            #         pass
-            #         # self.get_logger().warn("===== Path Following Setpoint Module Can't Response =====")
-            # else : 
+            ###  PF Attitude Command Module(Setpoint)
+            if self.path_following_flag is True :
+                if self.initFlag_PF_Att_Cmd is True :
+                    self.initTimeStamp_PF_Att_Cmd = self.timestamp_offboard
+                    # print("test")
+                    self.initFlag_PF_Att_Cmd = False
+                following_service = PathFollowingService()
+                following_service.RequestPathFollowing(self.waypoint_x, self.waypoint_y, self.waypoint_z)
+                # rclpy.spin_once(following_service)
+                rclpy.spin_until_future_complete(following_service, following_service.future_setpoint)
+                if following_service.future_setpoint.done():
+                    try : 
+                        following_service.result = following_service.future_setpoint.result()
+                    except Exception as e:
+                        following_service.get_logger().info(
+                            'Service call failed %r' % (e,))
+                    else :
+                        following_service.get_logger().info( "Path Following Setpoint Module Complete!! ")
+                        # print(following_service.result.response_pathfollowing)
+                        if following_service.result.response_pathfollowing is True :
+                            self.PF_response_setpoint_timestamp = following_service.result.response_timestamp
+                            #########################################################################################
+                            self.path_following_flag =False
+                            self.path_following_complete = True
+                        else :
+                            pass    
+                    finally : 
+                        following_service.destroy_node()
+                else : 
+                    pass
+                    # self.get_logger().warn("===== Path Following Setpoint Module Can't Response =====")
+            else : 
                 pass
             
             
@@ -425,7 +408,7 @@ class ControllerNode(Node):
         else:
             self.arm()
             
-            # self.Takeoff()
+            self.Takeoff()
             
         if self.OffboardCount < self.OffboardCounter:
             self.OffboardCount = self.OffboardCount + 1
