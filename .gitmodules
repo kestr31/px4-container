@@ -1,8 +1,4 @@
-[submodule "AirSim-Gazebo/ros_ws/laser_geometry"]
-	path = AirSim-Gazebo/ros_ws/laser_geometry
-	url = https://github.com/ros-perception/laser_geometry.git
-	branch = galactic
-[submodule "AirSim-Gazebo/ros_ws/pointcloud_to_laserscan"]
-	path = AirSim-Gazebo/ros_ws/pointcloud_to_laserscan
-	url = https://github.com/ros-perception/pointcloud_to_laserscan.git
-	branch = galactic
+[submodule "AirSim-Gazebo/ros_ws/common_interfaces"]
+        path = AirSim-Gazebo/ros_ws/common_interfaces
+        url = https://github.com/ros2/common_interfaces.git
+        branch = galactic
