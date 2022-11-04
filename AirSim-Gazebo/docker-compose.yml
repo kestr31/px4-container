@@ -27,10 +27,10 @@ services:
       - shared-image:/root/shared
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
-      - ${HOME}/gitcodes_221103/px4-container/AirSim-Gazebo/models/AirSim/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
-      # - ${HOME}/gitcodes_221103/px4-container/AirSim/models/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
-      - ${HOME}/gitcodes_221103/px4-container/AirSim-Gazebo/entrypoint-sim.sh:/usr/local/bin/entrypoint.sh
-      # - ${HOME}/gitcodes_221103/px4-container/AirSim-Gazebo/LinuxNoEditor_temp:/home/user/ForestDeploy
+      - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/models/AirSim/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
+      # - ${HOME}/gitcodes/px4-container/AirSim/models/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
+      - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-sim.sh:/usr/local/bin/entrypoint.sh
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/LinuxNoEditor_temp:/home/user/ForestDeploy
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       #- /mnt/wslg:/mnt/wslg
@@ -87,14 +87,14 @@ services:
       - shared-image:/root/shared
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
-      - ${HOME}/gitcodes_221103/px4-container/AirSim-Gazebo/entrypoint-px4.sh:/usr/local/bin/entrypoint.sh
-      - ${HOME}/gitcodes_221103/px4-container/AirSim-Gazebo/ros_ws:/root/ros_ws/src
+      - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-px4.sh:/usr/local/bin/entrypoint.sh
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/ros_ws:/root/ros_ws/src
       # - ${HOME}/Pictures/MCResult:/root/MCResult
-      # - /home/merlin/gitcodes_221103/px4-container/AirSim-Gazebo/python/spawnObject.py:/root/AirSim/python/spawnObject.py
-      # - ${HOME}/gitcodes_221103/px4-container/Gazebo/models:/root/PX4-Autopilot/Tools/sitl_gazebo/models
-      # - ${HOME}/gitcodes_221103/px4-container/Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
-      # - ${HOME}/gitcodes_221103/px4-container/AirSim-Gazebo/GazeboDrone:/root/AirSim/GazeboDrone/build/GazeboDrone
-      # - /home/merlin/gitcodes_221103/px4-container/AirSim-Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/python/spawnObject.py:/root/AirSim/python/spawnObject.py
+      # - ${HOME}/gitcodes/px4-container/Gazebo/models:/root/PX4-Autopilot/Tools/sitl_gazebo/models
+      # - ${HOME}/gitcodes/px4-container/Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/GazeboDrone:/root/AirSim/GazeboDrone/build/GazeboDrone
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       #- /mnt/wslg:/mnt/wslg
@@ -121,7 +121,7 @@ services:
       - DISPLAY=$DISPLAY
       - WAYLAND_DISPLAY=$WAYLAND_DISPLAY
       - QT_NO_MITSHM=1 
-      - XDG_RUNTIME_DIR=/tmp
+      - XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
       # - LD_LIBRARY_PATH=/usr/lib/wsl/lib
     volumes:
