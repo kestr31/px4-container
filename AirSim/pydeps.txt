@@ -1,5 +1,6 @@
 msgpack-rpc-python
 numpy
 opencv-contrib-python
+PyUserInput
 watchdog
 airsim
