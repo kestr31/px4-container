@@ -6,8 +6,6 @@ import numpy as np
 import math
 from itertools import chain
 
-
-
 #   ROS2 python 
 import rclpy
 from rclpy.node import Node
@@ -23,10 +21,7 @@ from sensor_msgs.msg import Image
 import cv2
 
 from cv_bridge import CvBridge
-
-
 from pytictoc import TicToc
-
 
 #   Gazebo Client Reset, Pause, Unpase, SRV
 from std_srvs.srv import Empty
@@ -478,7 +473,6 @@ class ControllerNode(Node):
                 print(self.vel_cmd_ned[0],self.vel_cmd_ned[1],self.vel_cmd_ned[2])
                 # self.TargetVelocityCmd = [10.0, 1.0, -5.0]
                 self.TargetVelYawCmd = self.vel_cmd_yaw
-                
                 self.get_logger().warn("===== Use Open Velocity Command =====")
                 self.SetVelocity(self.TargetVelocityCmd, self.TargetVelYawCmd)
                 # self.waypoint_pass_flag = True
@@ -696,12 +690,10 @@ class ControllerNode(Node):
         SinPitch = math.sin(Pitch * 0.5)
         CosRoll = math.cos(Roll * 0.5)
         SinRoll= math.sin(Roll * 0.5)
-        
         w = CosRoll * CosPitch * CosYaw + SinRoll * SinPitch * SinYaw
         x = SinRoll * CosPitch * CosYaw - CosRoll * SinPitch * SinYaw
         y = CosRoll * SinPitch * CosYaw + SinRoll * CosPitch * SinYaw
         z = CosRoll * CosPitch * SinYaw - SinRoll * CosPitch * CosYaw
-        
         return w, x, y, z
 
     def DCM(self, _phi, _theta, _psi):
@@ -774,7 +766,10 @@ class ControllerNode(Node):
         msg.vy = SetVelocity[1]
         msg.vz = SetVelocity[2]
         msg.yaw = SetYaw
-
+        msg.yawspeed = np.NaN
+        msg.acceleration = [np.NaN,np.NaN,np.NaN]
+        msg.jerk = [np.NaN,np.NaN,np.NaN]
+        msg.thrust = [np.NaN,np.NaN,np.NaN]
         self.TrajectorySetpointPublisher_.publish(msg)
         
     def LidarCallback(self, pc_msg):
@@ -817,5 +812,3 @@ class ControllerNode(Node):
             self.waypoint_pass_flag = False
         else :
             pass
-
-   

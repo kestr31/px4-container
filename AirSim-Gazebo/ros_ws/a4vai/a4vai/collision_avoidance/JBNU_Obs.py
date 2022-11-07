@@ -13,26 +13,13 @@ class JBNU_Collision():
         print("initialJBNU")
         
     def CA(self, img2d):
-        """
-        responses = self.client.simGetImages([airsim.ImageRequest("", airsim.ImageType.DepthPerspective,  True,False)]) 
-        response = responses[0]
-        if ((responses[0].width != 0 or responses[0].height != 0)):
-            img1d = response.image_data_float
-            img2d = np.reshape(img1d,(response.height, response.width)) 
-        else:
-            print("Something bad happened! Restting AirSim!")
-            img2d = np.ones(640, 480)
-        """
         Image = img2d
-        
         Image = cv2.resize(Image, (300,300), cv2.INTER_AREA)
 
         cv2.imshow('Test', Image)
         cv2.waitKey(1)
 
         Image = np.expand_dims(Image, axis=0)
-        
-        
 
         onnx_model = onnx.load("/root/ros_ws/src/a4vai/a4vai/collision_avoidance/Inha_1_nov.onnx")
         onnx.checker.check_model(onnx_model)
