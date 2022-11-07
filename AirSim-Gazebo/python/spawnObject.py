@@ -62,11 +62,11 @@ def main():
 
     if args.nobject > 0:
         n = args.nobject
-        t1 = threading.Thread(target=genObj, args=(args.asset_name,args.region,1, n,args,design_num))
-        t2 = threading.Thread(target=genObj, args=(args.asset_name,args.region,n+1, 2*n,design_num+n))
-        t3 = threading.Thread(target=genObj, args=(args.asset_name,args.region,2*n+1, 3*n, design_num+n*2))
-        t4 = threading.Thread(target=genObj, args=(args.asset_name,args.region,3*n+1, 4*n, design_num+n*3))
-        t5 = threading.Thread(target=genObj, args=(args.asset_name,args.region,4*n+1, 5*n, design_num+n*4))
+        t1 = threading.Thread(target=genObj, args=(args.asset_name,args.region,1, n,args.design_num))
+        t2 = threading.Thread(target=genObj, args=(args.asset_name,args.region,n+1, 2*n,args.design_num+n))
+        t3 = threading.Thread(target=genObj, args=(args.asset_name,args.region,2*n+1, 3*n, args.design_num+n*2))
+        t4 = threading.Thread(target=genObj, args=(args.asset_name,args.region,3*n+1, 4*n, args.design_num+n*3))
+        t5 = threading.Thread(target=genObj, args=(args.asset_name,args.region,4*n+1, 5*n, args.design_num+n*4))
 
         t1.start()
         t2.start()
