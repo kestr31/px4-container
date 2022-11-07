@@ -163,12 +163,12 @@ class Collision_Avoidance(Node):
         current_frame = self.CvBridge.imgmsg_to_cv2(msg)
         self.current_frame = np.asarray(current_frame.tolist(), dtype = np.float32)
         depth_img_in_meters = self.current_frame.reshape(640, 480, 1)
-        print(type(depth_img_in_meters))
-        depth_center = depth_img_in_meters[:,235:245]
+        # print(type(depth_img_in_meters))
+        depth_center = depth_img_in_meters[:,230:240]
         min_distance = np.amin(depth_center)
         print(min_distance)
-        cv2.imshow("depth", self.current_frame)
-        cv2.waitKey(1)
+        # cv2.imshow("depth", self.current_frame)
+        # cv2.waitKey(1)
         threshold_frame = np.interp(current_frame, (0.0, 10.0), (0, 255))
         self.depth_colored_frame = cv2.applyColorMap(cv2.convertScaleAbs(threshold_frame,alpha=1),cv2.COLORMAP_JET)
         
