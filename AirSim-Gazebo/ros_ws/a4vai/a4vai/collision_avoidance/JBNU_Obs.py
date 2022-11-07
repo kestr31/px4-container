@@ -34,5 +34,5 @@ class JBNU_Collision():
         print(vx,'\t',vy,'\t', - vz,'\t', -vyaw)
         
         
-        return float(vx), float(vy), - float(vz), - float(vyaw)
+        return float(vx), float(vy), float(vz), - float(vyaw)
 

@@ -146,7 +146,7 @@ class ControllerNode(Node):
         self.map_generation_flag = True
         self.path_planning_complete = False
         self.InitialPositionFlag = False
-        self.InitialPosition = [0.0, 0.0, -8.0]
+        self.InitialPosition = [0.0, 0.0, -5.0]
 
         self.phase_time = 0
         self.start_point = [1.0, 1.0]
@@ -782,15 +782,16 @@ class ControllerNode(Node):
         dist = np.sqrt(x **2 + y ** 2)
         min_dist = np.min(dist)
 
-        if min_dist < 5:
+        if min_dist < 1:
             if self.ObstacleFlag is False :
                 self.waypoint_pass_flag = True
-                self.phase_time = self.get_clock().now().nanoseconds
+                self.phase_time = self.timestamp_offboard
             else :
-                self.waypoint_pass_flag = False
+                pass
+                
             self.ObstacleFlag = True
         else : 
-            if (self.get_clock().now().nanoseconds - self.phase_time) > 1 * 10.0**9 :
+            if (self.timestamp_offboard) > 3 * 10.0**6 :
                 self.ObstacleFlag = False
             else : 
                 pass
@@ -808,7 +809,8 @@ class ControllerNode(Node):
         else : 
             pass
         if self.waypoint_pass_flag is True : 
-            # self.waypoint_index += 2
+            self.waypoint_index += 1
+            print("Waypoint index ++++++")
             self.waypoint_pass_flag = False
         else :
             pass

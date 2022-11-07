@@ -9,23 +9,6 @@
       <uri>model://grass_plane</uri>
       <pose>250 250 -0.1 0 0 0</pose>
     </include>
-    <plugin name='dryden_world' filename='libgazebo_dryden_plugin.so'>
-      <frameId>base_link</frameId>
-      <robotNamespace/>
-      <windVelocityMean>3.0</windVelocityMean>
-      <windVelocityMax>3.0</windVelocityMax>
-      <windVelocityVariance>0</windVelocityVariance>
-      <windDirectionMean>0 1 0</windDirectionMean>
-      <windDirectionVariance>0</windDirectionVariance>
-      <windGustStart>1</windGustStart>
-      <windGustDuration>500</windGustDuration>
-      <windGustVelocityMean>3.0</windGustVelocityMean>
-      <windGustVelocityMax>3.0</windGustVelocityMax>
-      <windGustVelocityVariance>0.1</windGustVelocityVariance>
-      <windGustDirectionMean>1 0 0</windGustDirectionMean>
-      <windGustDirectionVariance>0.5</windGustDirectionVariance>
-      <windPubTopic>world_wind</windPubTopic>
-    </plugin>
     <physics name='default_physics' default='0' type='ode'>
       <gravity>0 0 -9.8066</gravity>
       <ode>

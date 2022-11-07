@@ -69,14 +69,14 @@ services:
       - AIRSIM_HOST=172.21.0.5
       - PX4_SIM_HOST_ADDR=172.21.0.6
       - PX4_SIM_MODEL=typhoon_inha
-      - PX4_SIM_WOLRLD=grass
+      - PX4_SIM_WOLRLD=grass_dryden
       - NO_PXH=1
       # - PX4_HOME_LAT=28.452386
       # - PX4_HOME_LON=-13.867138
       # - PX4_HOME_ALT=28.5
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
-      - HEADLESS=1
+      # - HEADLESS=1
       # - DEBUG_ENTRYPOINT=1
       # - PX4_SITL_DEBUGGER=ide
       # - REBUILD_RPKG=1
@@ -91,8 +91,8 @@ services:
       - ${HOME}/workspace/px4-container/AirSim-Gazebo/ros_ws:/root/ros_ws/src
       # - ${HOME}/Pictures/MCResult:/root/MCResult
       # - /home/merlin/workspace/px4-container/AirSim-Gazebo/python/spawnObject.py:/root/AirSim/python/spawnObject.py
-      # - ${HOME}/workspace/px4-container/Gazebo/models:/root/PX4-Autopilot/Tools/sitl_gazebo/models
-      # - ${HOME}/workspace/px4-container/Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
+      - ${HOME}/workspace/px4-container/Gazebo/models:/root/PX4-Autopilot/Tools/sitl_gazebo/models
+      - ${HOME}/workspace/px4-container/Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
       # - ${HOME}/workspace/px4-container/AirSim-Gazebo/GazeboDrone:/root/AirSim/GazeboDrone/build/GazeboDrone
       # - /home/merlin/workspace/px4-container/AirSim-Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 

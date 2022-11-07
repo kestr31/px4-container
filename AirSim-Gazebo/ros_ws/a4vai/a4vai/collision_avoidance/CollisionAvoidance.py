@@ -164,7 +164,7 @@ class Collision_Avoidance(Node):
         self.current_frame = np.asarray(current_frame.tolist(), dtype = np.float32)
         depth_img_in_meters = self.current_frame.reshape(640, 480, 1)
         # print(type(depth_img_in_meters))
-        depth_center = depth_img_in_meters[:,230:240]
+        depth_center = depth_img_in_meters[:,240:250]
         min_distance = np.amin(depth_center)
         print(min_distance)
         # cv2.imshow("depth", self.current_frame)
