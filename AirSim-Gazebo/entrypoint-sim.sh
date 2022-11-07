@@ -74,7 +74,7 @@ else
 	echo " / /  / / ___ |/ ____/ /_/ / /___/ /|  /   "
 	echo "/_/  /_/_/  |_/_/    \____/_____/_/ |_/    "
 
-	mogrify -resize 5000x5000 /home/user/ForestDeploy/ForestDeploy/result.png && cp $mapImg /root/shared/Map.png
+	cp $mapImg /root/shared/Map.png
 
 	# Run MAVLink Router for Communication with QGC
 	echo ">>>>>>>>>>>>>INITIALIZING MAVLINK ROUTER FOR QGC CONNECTION<<<<<<<<<<<"
