@@ -34,6 +34,10 @@ def Calc_VirTgPos(Pos, nextWPidx, WPs, lookAheadDist):
     closestPosOnPath[0] =   prevWP[0] + unitVecWP1ToWP2[0]*len1*cosangle
     closestPosOnPath[1] =   prevWP[1] + unitVecWP1ToWP2[1]*len1*cosangle
     closestPosOnPath[2] =   prevWP[2] + unitVecWP1ToWP2[2]*len1*cosangle
+
+    # closestPosOnPath[0] =   prevWP[0] + unitVecWP1ToWP2[0]*(len1 + 0.5)*cosangle
+    # closestPosOnPath[1] =   prevWP[1] + unitVecWP1ToWP2[1]*(len1 + 0.5)*cosangle
+    # closestPosOnPath[2] =   prevWP[2] + unitVecWP1ToWP2[2]*(len1 + 0.5)*cosangle
     
     if ang2 > 0.5*PI:
         distToPath          =   len1

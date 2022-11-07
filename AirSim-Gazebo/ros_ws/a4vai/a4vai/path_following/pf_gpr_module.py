@@ -68,7 +68,7 @@ class PF_GPR_Module(Node):
         self.PF_Att2PF_Gpr_Subscriber_ = self.create_subscription(PFAtt2PFGuid, '/pf_att_2_pf_guid', self.PF_Att2PF_Gpr_callback, self.QOS_Sub_Sensor)
         
         self.PFGPRService_ = self.create_service(PathFollowingGPR, 'path_following_gpr', self.PFGPRSRVCallback)
-        print("===== Path Following Attitude Command Node is Initialize =====")
+        
         
 #################################################################################################################
     def PFGPRCallback(self):
@@ -80,9 +80,12 @@ class PF_GPR_Module(Node):
         # print("Time = ", str(Time))
         # print("outNDO = ", str(self.outNDO))
         # function
-        GPR_out = self.PF_GPR_.PF_GPR_Module(Time, self.outNDO)
+        # GPR_out = self.PF_GPR_.PF_GPR_Module(Time, self.outNDO)
         # output
-        self.gpr_output = GPR_out.copy()
+        # self.gpr_output = GPR_out.copy()
+        self.gpr_output = self.gpr_output = [self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO,
+                           self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO,
+                           self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO, self.outNDO]
         ############# Algirithm  End  - PF_GPR  #############
         self.gpr_output_data = list(chain.from_iterable(self.gpr_output))
         self.gpr_output_index = 3

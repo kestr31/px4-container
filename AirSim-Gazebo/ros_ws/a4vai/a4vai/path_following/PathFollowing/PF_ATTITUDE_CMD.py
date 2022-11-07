@@ -62,11 +62,12 @@ class PF_ATTITUDE_CMD():
             Vn          =   np.array(Vn)
             AngEuler    =   np.array(AngEuler)
             Acc_disturb =   np.array(Acc_disturb)
-
+            
+            
         #.. Virtual Target
             # function & output
             tgPos       =   Calc_VirTgPos(Pos, nextWPidx, WPs, LAD)
-
+            print(tgPos)
         #.. Kinematics
             # input
             tgVn        =   np.array([0., 0., 0.])

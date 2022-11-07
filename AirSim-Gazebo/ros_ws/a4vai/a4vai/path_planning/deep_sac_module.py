@@ -439,12 +439,27 @@ class SAC:
         prunedNew_x_points_array = prunedNew_x_points_array / 10.0
         prunedNew_y_points_array = prunedNew_y_points_array / 10.0
 
+        prunedNew_x_points_array[0] = 1.0
+        prunedNew_y_points_array[0] = 1.0
+
+        # prunedNew_x_points_array[1] = 10.0
+        # prunedNew_y_points_array[1] = 10.0
+
+        # prunedNew_x_points_array[2] = 20.0
+        # prunedNew_y_points_array[2] = 20.0
+
+        # prunedNew_x_points_array[3] = 300.0
+        # prunedNew_y_points_array[3] = 300.0
+
+        # prunedNew_x_points_array[4] = 400.0
+        # prunedNew_y_points_array[4] = 400.0
+
         prunedNew_y_points = prunedNew_y_points_array.tolist()
         prunedNew_x_points = prunedNew_x_points_array.tolist()
 
-        print("SAC-Pruning x-waypoints", prunedNew_x_points)
-        print("SAC-Pruning y-waypoints", prunedNew_y_points)
-
+        
+        print("SAC-Pruning x-waypoints", prunedNew_y_points)
+        print("SAC-Pruning y-waypoints", prunedNew_x_points)
 
         return prunedNew_y_points, prunedNew_x_points, prunedNew_z_points
     
