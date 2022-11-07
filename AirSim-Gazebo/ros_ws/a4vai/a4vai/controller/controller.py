@@ -146,11 +146,11 @@ class ControllerNode(Node):
         self.map_generation_flag = True
         self.path_planning_complete = False
         self.InitialPositionFlag = False
-        self.InitialPosition = [0.0, 0.0, -5.0]
+        self.InitialPosition = [0.0, 0.0, -8.0]
 
         self.phase_time = 0
-        self.start_point = [10.0, 10.0]
-        self.goal_point = [4990.0, 4990.0]
+        self.start_point = [1.0, 1.0]
+        self.goal_point = [499.0, 499.0]
         
         self.PP_response_timestamp = 0
         

@@ -121,8 +121,8 @@ class SAC:
         ## Range [-2500, 2500]으로 바꾸기
         Step_Num = MapSize 
         
-        Init = np.array([Start[0], 2, Start[1]])
-        Target = np.array([Goal[0], 2, Goal[1]])
+        Init = np.array([Start[0]*10.0, 2, Start[1]*10.0])
+        Target = np.array([Goal[0]*10.0, 2, Goal[1]*10.0])
 
         Waypoint = np.zeros((Step_Num, 3))
         Pos = Init
@@ -256,26 +256,33 @@ class SAC:
         for i in range(0, len(path_x)):
             wp_epi.append([path_x[i], path_y[i]])
 
+        if wp_epi[-1] != [Target[0], Target[2]]:   # 마지막 wp를 목적지 좌표로 변경
+            wp_epi[-1] = [Target[0], Target[2]]
+
         origin_wp = copy.deepcopy(wp_epi)
         wp_candidate = origin_wp[len(origin_wp) - 1]  # 마지막 WP
         pruned_wp = [wp_candidate]  # 마지막 WP
 
-        coverage = 10
+        coverage = 15
 
         wp_index_pre = origin_wp.index(wp_candidate)  # 마지막 WP의 인덱스
         wp_index_for = origin_wp.index(wp_candidate)
 
+        NotAvailPrun = 1
         collision = False
 
         while 1:
             # for i in range(len(origin_wp) - 1):
-            for i in range(wp_index_for - 10, wp_index_for, 1):
+            for i in range(wp_index_for - 30, wp_index_for, 1):
                 if i < 0:
                     i = 0
                 collisionCheck = False
 
                 InitPos = np.array([wp_candidate[0], wp_candidate[1]])  # wp_candidate 초기 위치
                 FinalPos = np.array([origin_wp[i][0], origin_wp[i][1]])
+                # sub_mat = Image_New[int(FinalPos[1]):int(InitPos[1])][int(FinalPos[0]):int(InitPos[1])]
+
+                # Unit = (FinalPos - InitPos) / np.linalg.norm((FinalPos - InitPos))
 
                 CurrPos = InitPos
                 ################################################################################################################
@@ -292,14 +299,12 @@ class SAC:
                         collisionCheck = True
                         break
 
-
                 if collisionCheck:
                     if i == wp_index_pre - 1:
-                        # EMERGENCY MODIFICATIONS
-                        # wp_candidate = origin_wp[i]
-                        # wp_index = origin_wp.index(wp_candidate)
-                        # pruned_wp.append(wp_candidate)
-                        # wp_index_pre = wp_index
+                        wp_candidate = origin_wp[i]
+                        wp_index = origin_wp.index(wp_candidate)
+                        pruned_wp.append(wp_candidate)
+                        wp_index_pre = wp_index
                         collision = True
                         break
 
@@ -314,12 +319,9 @@ class SAC:
                     wp_candidate = origin_wp[i]  # 중간 경로점 없앰
                     wp_index = origin_wp.index(wp_candidate)
 
-                    # if wp_index_pre - wp_index < 0.08 * (
-                    #         len(origin_wp) - 1):  # (0.01 * pruning_rate) * (len(origin_wp) - 1):  # 지금 인덱스와 크기 차이가 28보다 작으면 첫번째 반복문 끝내기 # 차이 28만큼 진행시켰으면 200
                     pruned_wp.append(wp_candidate)
                     wp_index_pre = wp_index
                     break
-
 
             if wp_candidate == origin_wp[0]:  # 진짜 끝
                 pruned_wp.append(origin_wp[0])
@@ -330,79 +332,92 @@ class SAC:
                 break
 
             wp_index_for = wp_index_pre
-            
+
             if collision:
-                # print("pruning is not availabe")
-                # EMERGENCY MODIFICATION
-                break
+                # print("pruning not available")
+                NotAvailPrun = 1
+                # break
 
         pruned_wp = list(reversed(pruned_wp))
         pruned_wp.append(origin_wp[-1])
 
+        # print(wp_epi[-1])
+        # print(wp_epi[-2])
+        # print(wp_epi[0])
+
         ## Plot
         pruned_x_points = []
         pruned_y_points = []
-        pruned_z_points = []
         for i in range(len(pruned_wp)):
             pruned_x_points.append(pruned_wp[i][0])
             pruned_y_points.append(pruned_wp[i][1])
-            pruned_z_points.append(-5.0)
 
+        # List 값 내 중복 요소 제거
+        del pruned_x_points[0]
+        del pruned_x_points[-1]
+        del pruned_y_points[0]
+        del pruned_y_points[-1]
+
+        # List 값 내 일정 간격으로 자르기
+        LinSP = 50
         prunedNew_x_points = []
         prunedNew_y_points = []
         prunedNew_z_points = []
-        for i in range(len(pruned_wp) - 1):
+        for i in range(0, len(pruned_x_points)-1):
             First = np.array([pruned_x_points[i], pruned_y_points[i]])
-            Second = np.array([pruned_x_points[i + 1], pruned_y_points[i + 1]])
+            Second = np.array([pruned_x_points[i+1], pruned_y_points[i+1]])
 
-            if (np.linalg.norm(Second - First) <= 50):
-                prunedNew_x_points.append(pruned_x_points[i])
-                prunedNew_y_points.append(pruned_y_points[i])
-                prunedNew_z_points.append(-5.0)
+            if (np.linalg.norm(Second-First) <= LinSP):
+                prunedNew_x_points.append(pruned_x_points[i]/10)
+                prunedNew_y_points.append(pruned_y_points[i]/10)
+                prunedNew_z_points.append(-50.0/10)
             else:
                 Unit = (Second - First) / np.linalg.norm(Second - First)
 
                 State = First
-                prunedNew_x_points.append(First[0])
-                prunedNew_y_points.append(First[1])
-                prunedNew_z_points.append(-5.0)
-                for j in range(0, 5000):
-                    State = State + 50 * Unit
+                prunedNew_x_points.append(First[0]/10)
+                prunedNew_y_points.append(First[1]/10)
+                prunedNew_z_points.append(-50.0/10)
+                for j in range(0,5000):
+                    State = State + LinSP * Unit
 
-                    prunedNew_x_points.append(State[0])
-                    prunedNew_y_points.append(State[1])
-                    prunedNew_z_points.append(-5.0)
+                    prunedNew_x_points.append(State[0]/10)
+                    prunedNew_y_points.append(State[1]/10)
+                    prunedNew_z_points.append(-50.0/10)
 
-                    if (np.linalg.norm(Second - State) <= 50):
+                    if (np.linalg.norm(Second - State) <= LinSP):
                         break
+        prunedNew_x_points.append(Second[0]/10)
+        prunedNew_y_points.append(Second[1]/10)
+        prunedNew_z_points.append(-50.0/10)
 
         ## End Pruning Computation
-        TimeEnd = time.time()
+        End2 = time.time()
 
         ## Plot and Save Image
         imageLine = RawImage.copy()
 
         # 이미지에 맞게 pruned up Waypoint 변경 후 그리기
-        for m in range(0, i - 2):
+        for m in range(0, len(prunedNew_x_points)-2):
             # Im_i = int(pruned_x_points[m])
-            Im_i = int(pruned_x_points[m + 1])
+            Im_i = int(prunedNew_x_points[m + 1])
             # Im_j = MapSize - int(pruned_y_points[m])
-            Im_j = MapSize - int(pruned_y_points[m + 1])
+            Im_j = MapSize - int(prunedNew_y_points[m + 1])
 
-            Im_iN = int(pruned_x_points[m + 2])
-            Im_jN = MapSize - int(pruned_y_points[m + 2])
+            Im_iN = int(prunedNew_x_points[m + 2])
+            Im_jN = MapSize - int(prunedNew_y_points[m + 2])
 
             cv2.line(imageLine, (Im_i, Im_j), (Im_iN, Im_jN), (0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
 
-        cv2.imwrite('/root/MCResult/TestResult_prunning0.png', imageLine)  ################################
+        cv2.imwrite('Final/TestResult_prunningNew0.png', imageLine)  ################################
 
         # print(pruned_x_points)
         
         ## SAC-Pruning Cost Calculation with RRT
         Len = 0
-        for cal in range(1,len(pruned_x_points)-2):
-            First = np.array([pruned_x_points[cal], pruned_y_points[cal]])
-            Second = np.array([pruned_x_points[cal+1], pruned_y_points[cal+1]])
+        for cal in range(1,len(prunedNew_x_points)-2):
+            First = np.array([prunedNew_x_points[cal], prunedNew_y_points[cal]])
+            Second = np.array([prunedNew_x_points[cal+1], prunedNew_y_points[cal+1]])
             
             U = (Second - First) / np.linalg.norm(Second - First)
             
@@ -427,39 +442,14 @@ class SAC:
             Len_temp = np.linalg.norm(Second - First)
             Len = Len + Len_temp
             
-        Cost = (Len-self.LenRRT) / self.LenRRT  #self. 변경
+        Cost = (Len-LenRRT) / LenRRT
         
-        # print("SAC-Pruning 시간", TimeEnd - TimeStart)
-        # print("SAC-Pruning Cost", Cost)
+        print("SAC-Pruning 시간", End2 - Start2)
+        print("SAC-Pruning Cost", Cost)
         
-        
-        # print("SAC-Pruning z-waypoints", prunedNew_z_points)
-        prunedNew_x_points_array = np.array(prunedNew_x_points)
-        prunedNew_y_points_array = np.array(prunedNew_y_points)
-        prunedNew_x_points_array = prunedNew_x_points_array / 10.0
-        prunedNew_y_points_array = prunedNew_y_points_array / 10.0
-
-        prunedNew_x_points_array[0] = 1.0
-        prunedNew_y_points_array[0] = 1.0
-
-        # prunedNew_x_points_array[1] = 10.0
-        # prunedNew_y_points_array[1] = 10.0
-
-        # prunedNew_x_points_array[2] = 20.0
-        # prunedNew_y_points_array[2] = 20.0
-
-        # prunedNew_x_points_array[3] = 300.0
-        # prunedNew_y_points_array[3] = 300.0
-
-        # prunedNew_x_points_array[4] = 400.0
-        # prunedNew_y_points_array[4] = 400.0
-
-        prunedNew_y_points = prunedNew_y_points_array.tolist()
-        prunedNew_x_points = prunedNew_x_points_array.tolist()
-
-        
-        print("SAC-Pruning x-waypoints", prunedNew_y_points)
-        print("SAC-Pruning y-waypoints", prunedNew_x_points)
+        print("SAC-Pruning x-waypoints", prunedNew_x_points)
+        print("SAC-Pruning y-waypoints", prunedNew_y_points)
+        print("SAC-Pruning z-waypoints", prunedNew_z_points)
 
         return prunedNew_y_points, prunedNew_x_points, prunedNew_z_points
     
