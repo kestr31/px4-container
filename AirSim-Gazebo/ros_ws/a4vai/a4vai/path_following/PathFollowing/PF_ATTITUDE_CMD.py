@@ -24,9 +24,7 @@ class PF_ATTITUDE_CMD():
         self.lx_NDO     =   2.
         self.ly_NDO     =   2.
         self.lz_NDO     =   1.
-        # self.lx_NDO     =   0.0
-        # self.ly_NDO     =   0.0
-        # self.lz_NDO     =   0.0
+
         self.outNDO     =   np.zeros(3)
         self.a_drag_n   =   np.zeros(3)
 

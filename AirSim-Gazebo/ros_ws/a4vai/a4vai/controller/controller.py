@@ -153,6 +153,8 @@ class ControllerNode(Node):
         self.goal_point = [499.0, 499.0]
         
         self.PP_response_timestamp = 0
+        self.CA_timestamp = 0
+
         
         self.path_planning_flag = False
         self.path_planning_complete = False
@@ -470,7 +472,7 @@ class ControllerNode(Node):
                 self.DCM_bn = self.DCM_trans(self.DCM_nb)
                 self.BodytoNED()
                 self.TargetVelocityCmd = [self.vel_cmd_ned[0], self.vel_cmd_ned[1], self.vel_cmd_ned[2]]
-                print(self.vel_cmd_ned[0],self.vel_cmd_ned[1],self.vel_cmd_ned[2])
+                # print(self.vel_cmd_ned[0],self.vel_cmd_ned[1],self.vel_cmd_ned[2])
                 # self.TargetVelocityCmd = [10.0, 1.0, -5.0]
                 self.TargetVelYawCmd = self.vel_cmd_yaw
                 self.get_logger().warn("===== Use Open Velocity Command =====")
@@ -560,6 +562,7 @@ class ControllerNode(Node):
     def EstimatorStatesCallback(self, msg):
         #   TimeStamp
         self.EstimatorStatesTime = msg.timestamp
+        # print("self.EstimatorStatesTime", self.EstimatorStatesTime)
         #   Position NED
         self.x = msg.states[7]
         self.y = msg.states[8]
@@ -700,7 +703,7 @@ class ControllerNode(Node):
         PHI = math.radians(_phi)  
         THETA = math.radians(_theta)
         PSI = math.radians(_psi)
-        print(PHI, THETA, PSI)
+        # print(PHI, THETA, PSI)
 
         mtx_DCM = np.array([[math.cos(PSI)*math.cos(THETA), math.sin(PSI)*math.cos(THETA), -math.sin(THETA)], 
                             [(-math.sin(PSI)*math.cos(PHI))+(math.cos(PSI)*math.sin(THETA)*math.sin(PHI)), (math.cos(PSI)*math.cos(PHI))+(math.sin(PSI)*math.sin(THETA)*math.sin(PHI)), math.cos(THETA)*math.sin(PHI)], 
@@ -775,6 +778,11 @@ class ControllerNode(Node):
     def LidarCallback(self, pc_msg):
         gen =point_cloud2.read_points(pc_msg, field_names = ('x', 'y', 'z'), skip_nans =True)
         gen_array = np.array(list(gen))
+        # print("self.get_clock().now().nanoseconds :", self.get_clock().now().nanoseconds)
+        # print("self.phase_time",self.phase_time)
+        # print("self.timestamp_offboard",self.timestamp_offboard)
+        
+        
         if np.size(gen_array) == 0 :
             gen_array = np.array([[300, 300, 300], [300, 300, 300], [300, 300, 300]])
         x = gen_array[:,0]
@@ -782,19 +790,24 @@ class ControllerNode(Node):
         dist = np.sqrt(x **2 + y ** 2)
         min_dist = np.min(dist)
 
-        if min_dist < 1:
-            if self.ObstacleFlag is False :
-                self.waypoint_pass_flag = True
-                self.phase_time = self.timestamp_offboard
-            else :
-                pass
-                
-            self.ObstacleFlag = True
-        else : 
-            if (self.timestamp_offboard) > 3 * 10.0**6 :
-                self.ObstacleFlag = False
+        if self.z < -2.0:
+            if min_dist < 4:
+                if self.ObstacleFlag is False :
+                    self.waypoint_pass_flag = True
+                    self.phase_time = self.get_clock().now().nanoseconds
+                else :
+                    self.waypoint_pass_flag = False
+                self.ObstacleFlag = True
+                # self.CA_timestamp = self.EstimatorStatesTime
             else : 
-                pass
+                # self.CA_timestamp = 0.0
+                if (self.get_clock().now().nanoseconds - self.phase_time) > 3 * 10.0**9 :
+                    self.ObstacleFlag = False
+                    # print("self.get_clock().now().nanoseconds - self.phase_time :",self.get_clock().now().nanoseconds - self.phase_time)
+                else : 
+                    self.ObstacleFlag = True
+        else :
+            self.ObstacleFlag = False
 
     def Waypoint_indexPublisher(self):
         msg = WayPointIndex()
@@ -809,8 +822,8 @@ class ControllerNode(Node):
         else : 
             pass
         if self.waypoint_pass_flag is True : 
-            self.waypoint_index += 1
-            print("Waypoint index ++++++")
+            self.waypoint_index += 2
+            print("Collision index ++++++++++++")
             self.waypoint_pass_flag = False
         else :
             pass

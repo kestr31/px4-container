@@ -18,6 +18,7 @@ def Guid_pursuit(Kgain, tgo, LOSazim, LOSelev, Vi, AccLim):
     vehSpd      =   norm(Vi)
     AccCmdw_y   =   Kgain*vehSpd*err_psi/tgo * cos(gam)
     AccCmdw_z   =   -Kgain*vehSpd*err_gam/tgo * 0.7 # 0.45
+
     AccCmdw     =   np.array([0., AccCmdw_y, AccCmdw_z])
     # min, max
     AccCmdw     =   np.where(AccCmdw > AccLim, AccLim, AccCmdw)

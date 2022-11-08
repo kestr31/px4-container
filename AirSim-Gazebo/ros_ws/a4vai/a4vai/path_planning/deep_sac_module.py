@@ -450,6 +450,27 @@ class SAC:
         print("SAC-Pruning x-waypoints", prunedNew_x_points)
         print("SAC-Pruning y-waypoints", prunedNew_y_points)
         print("SAC-Pruning z-waypoints", prunedNew_z_points)
+        
+        # prunedNew_y_points[0] = 1.0
+        # prunedNew_x_points[0] = 1.0
+        # prunedNew_y_points[1] = 40.0
+        # prunedNew_x_points[1] = 20.0
+        # prunedNew_y_points[2] = 60.0
+        # prunedNew_x_points[2] = 50.0
+        # prunedNew_y_points[3] = 90.0
+        # prunedNew_x_points[3] = 60.0
+        # prunedNew_y_points[4] = 120.0
+        # prunedNew_x_points[4] = 900.0
+        # prunedNew_y_points[5] = 190.0
+        # prunedNew_x_points[5] = 290.0
+        # prunedNew_y_points[6] = 330.0
+        # prunedNew_x_points[6] = 350.0
+        # prunedNew_y_points[7] = 400.0
+        # prunedNew_x_points[7] = 400.0
+        # prunedNew_y_points[8] = 400.0
+        # prunedNew_x_points[8] = 450.0
+        # prunedNew_y_points[9] = 500.0
+        # prunedNew_x_points[9] = 520.0
 
         # #.. start - designed path
         prunedNew_x_points_array    =   np.array([prunedNew_x_points])
