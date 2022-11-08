@@ -52,10 +52,12 @@ RUN \
 		--build-base ~/ros_ws/build \
 		--install-base ~/ros_ws/install \
 		--base-paths ~/ros_ws/src \
+		--symlink-install \
 	&& colcon build \
 		--build-base ~/gazebo_ros/build \
 		--install-base ~/gazebo_ros/install \
-		--base-paths ~/gazebo_ros/src
+		--base-paths ~/gazebo_ros/src \
+		--symlink-install
 		
 
 FROM stage_deps as stage_px4sitl
@@ -64,19 +66,11 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 COPY Gazebo/models /root/PX4-Autopilot/Tools/sitl_gazebo/models
 COPY Gazebo/worlds /root/PX4-Autopilot/Tools/sitl_gazebo/worlds
+COPY Gazebo/plugins /root/PX4-Autopilot/Tools/sitl_gazebo
 
 RUN \
-	make -C /root/PX4-Autopilot px4_sitl_rtps \
-	&& sed -i "s/\${MAVLINK_INCLUDE_DIRS}/\/root\/PX4-Autopilot\/build\/px4_sitl_rtps\/mavlink/g" \
-		/root/PX4-Autopilot/Tools/sitl_gazebo/CMakeLists.txt \
-	&& sed -i "s/find_package(MAVLink)/# find_package(MAVLink)/g" \
-		/root/PX4-Autopilot/Tools/sitl_gazebo/CMakeLists.txt \
-	&& cmake \
-		-B/root/PX4-Autopilot/build/px4_sitl_rtps/build_gazebo \
-		-S/root/PX4-Autopilot/Tools/sitl_gazebo \
-	&& make -C \
-		~/PX4-Autopilot/build/px4_sitl_rtps/build_gazebo \
-		-j$(nproc) -l$(nproc)
+	HEADLESS=1 make -C /root/PX4-Autopilot px4_sitl_rtps gazebo_typhoon_inha__grass
+
 
 FROM stage_deps as stage_final
 
@@ -103,7 +97,8 @@ RUN \
     --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
         sh -c "$(wget -O - https://github.com/deluan/zsh-in-docker/releases/download/v1.1.2/zsh-in-docker.sh | sed "77d;s/export TERM=xterm/export TERM=xterm-256color/g")" -- \
         -t agnoster \
-        -p git \                                                                                                                                     -p https://github.com/zsh-users/zsh-autosuggestions \
+        -p git \
+		-p https://github.com/zsh-users/zsh-autosuggestions \                                                                                                                                     -p https://github.com/zsh-users/zsh-autosuggestions \
         -p https://github.com/zsh-users/zsh-syntax-highlighting \
         && echo "alias cat='batcat --paging=never'" >> /root/.zshrc \
 	&& sed -i "s/#Port 22/Port 1022/g" \

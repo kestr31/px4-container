@@ -4,6 +4,7 @@ g++-8
 gstreamer1.0-plugins-bad
 gstreamer1.0-libav
 gstreamer1.0-gl
+imagemagick
 libyaml-cpp-dev
 libsdl2-dev
 libgles2
@@ -13,6 +14,7 @@ libudev-dev
 llvm*
 openssh-server
 patchelf
+python3-tk
 python3-yaml
 ros-galactic-image-transport
 ros-galactic-mavros*
@@ -21,5 +23,6 @@ ros-galactic-tf2-geometry-msgs
 ros-galactic-vision-opencv
 speech-dispatcher
 vulkan-utils
+xdotool
 xorg-dev
 x-window-system

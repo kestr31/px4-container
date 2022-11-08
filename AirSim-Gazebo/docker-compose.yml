@@ -1,0 +1,157 @@
+version: "3"
+services:
+  airsim:
+    privileged: true
+    environment:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
+      - DISPLAY=$DISPLAY
+      - WAYLAND_DISPLAY=$WAYLAND_DISPLAY
+      - QT_NO_MITSHM=1 
+      - XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR
+      - NVIDIA_DISABLE_REQUIRE=1
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      # --------SET FOR DEVELOPMENT OR DEBUGGING---------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      # - REBUILD=true
+      # - DEBUG_ENTRYPOINT=1
+      # - REBUILD_RPKG=1
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      #- LD_LIBRARY_PATH=/usr/lib/wsl/lib
+    volumes:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /usr/share/vulkan/icd.d/nvidia_icd.json:/etc/vulkan/icd.d/nvidia_icd.json
+      - /usr/share/vulkan/implicit_layer.d/nvidia_layers.json:/etc/vulkan/implicit_layer.d/nvidia_layers.json
+      - /usr/share/glvnd/egl_vendor.d/10_nvidia.json:/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+      - shared-image:/root/shared
+      # --------SET FOR DEVELOPMENT OR DEBUGGING---------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/models/AirSim/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
+      # - ${HOME}/gitcodes/px4-container/AirSim/models/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-sim.sh:/usr/local/bin/entrypoint.sh
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/LinuxNoEditor_temp:/home/user/ForestDeploy
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      #- /mnt/wslg:/mnt/wslg
+      #- /usr/lib/wsl:/usr/lib/wsl
+    devices:
+      # -----COMMENT OUT IF YOU EXPERIENCE OCI ERROR-----
+      - /dev/dri:/dev/dri
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - /dev/dxg:/dev/dxg
+    # network_mode: host
+    networks:
+      px4-sitl-as-gz:
+        ipv4_address: 172.21.0.5
+    container_name: sitl-as
+    image: kestr3l/px4:airsimg-gpu-0.0.3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+  px4:
+    privileged: true
+    environment:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
+      - DISPLAY=$DISPLAY
+      - WAYLAND_DISPLAY=$WAYLAND_DISPLAY
+      - QT_NO_MITSHM=1 
+      - XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - LD_LIBRARY_PATH=/usr/lib/wsl/lib
+      # ----------SET ITE SIMULTAION PARAMETERS----------
+      #  ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      - AIRSIM_HOST=172.21.0.5
+      - PX4_SIM_HOST_ADDR=172.21.0.6
+      - PX4_SIM_MODEL=typhoon_inha
+      - PX4_SIM_WOLRLD=grass_dryden
+      - NO_PXH=1
+      # - PX4_HOME_LAT=28.452386
+      # - PX4_HOME_LON=-13.867138
+      # - PX4_HOME_ALT=28.5
+      # --------SET FOR DEVELOPMENT OR DEBUGGING---------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      - HEADLESS=1
+      # - DEBUG_ENTRYPOINT=1
+      # - PX4_SITL_DEBUGGER=ide
+      # - REBUILD_RPKG=1
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
+    volumes:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - shared-image:/root/shared
+      # --------SET FOR DEVELOPMENT OR DEBUGGING---------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-px4.sh:/usr/local/bin/entrypoint.sh
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/ros_ws:/root/ros_ws/src
+      # - ${HOME}/Pictures/MCResult:/root/MCResult
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/python/spawnObject.py:/root/AirSim/python/spawnObject.py
+      # - ${HOME}/gitcodes/px4-container/Gazebo/models:/root/PX4-Autopilot/Tools/sitl_gazebo/models
+      # - ${HOME}/gitcodes/px4-container/Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/GazeboDrone:/root/AirSim/GazeboDrone/build/GazeboDrone
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/worlds:/root/PX4-Autopilot/Tools/sitl_gazebo/worlds
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      #- /mnt/wslg:/mnt/wslg
+      #- /usr/lib/wsl:/usr/lib/wsl
+    devices:
+      # -----COMMENT OUT IF YOU EXPERIENCE OCI ERROR-----
+      - /dev/dri:/dev/dri
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+    # network_mode: host
+    networks:
+      px4-sitl-as-gz:
+        ipv4_address: 172.21.0.6
+    container_name: sitl-gz-px4
+    image: kestr3l/px4:airsimg-gpu-0.0.3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+  qgc:
+    privileged: true
+    environment:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
+      - DISPLAY=$DISPLAY
+      - WAYLAND_DISPLAY=$WAYLAND_DISPLAY
+      - QT_NO_MITSHM=1 
+      - XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - LD_LIBRARY_PATH=/usr/lib/wsl/lib
+    volumes:
+      # -----------DEFAULT VALUE DO NOT MODIFY-----------
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - /mnt/wslg:/mnt/wslg
+      # - /usr/lib/wsl:/usr/lib/wsl
+    devices:
+      # -----COMMENT OUT IF YOU EXPERIENCE OCI ERROR-----
+      - /dev/dri:/dev/dri
+      # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
+      # - /dev/dxg:/dev/dxg
+    # network_mode: host
+    networks:
+      px4-sitl-as-gz:
+        ipv4_address: 172.21.0.7
+    container_name: sitl-qgc
+    image: kestr3l/qgc-app:nobg-4.0.0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+networks:
+    px4-sitl-as-gz:
+      external: true
+volumes:
+     shared-image:
+
+# NETWORK CONFIG: sitl-as -> 172.21.0.5 / sitl-gz-px4 -> 172.21.0.6 / qgc -> 172.21.0.7
+# RUN FOLLOWING DOCKER NETWORK GENERATION COMMAND BEFORE RUN
+# docker network create --gateway 172.21.0.1 --subnet 172.21.0.0/16 px4-sitl-as-gz

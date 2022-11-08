@@ -48,3 +48,7 @@ $RECYCLE.BIN/
 __pycache__
 # UE4
 ForestDeploy
+# ros workspace
+ros_ws_clean
+GazeboDrone
+RawImage.png

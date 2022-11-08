@@ -68,6 +68,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN \
     git clone https://github.com/eProsima/foonathan_memory_vendor.git /tmp/foonathan_memory \
+    && git -C /tmp/foonathan_memory reset --hard 5d315b2147585688368ecd9657ab6d628d077949 \
 	&& cd /tmp/foonathan_memory \
 	&& mkdir build && cd build \
 	&& cmake .. \
@@ -153,7 +154,7 @@ FROM stage_mid as stage_px4
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN git clone -b v1.13.0 https://github.com/PX4/PX4-Autopilot.git /root/PX4-Autopilot \ 
+RUN git clone https://github.com/PX4/PX4-Autopilot.git -b v1.13.0 /root/PX4-Autopilot \ 
 	&& cd /root/PX4-Autopilot \
 	&& git submodule update --init --recursive
 
@@ -162,7 +163,9 @@ COPY px4_ros /tmp/px4_ros
 
 RUN \
     git clone https://github.com/PX4/px4_ros_com.git ~/px4_ros/src/px4_ros_com \
+    && git -C ~/px4_ros/src/px4_ros_com reset --hard 7e25c34df0aab25d6e723385322c62712ea97207 \
     && git clone https://github.com/PX4/px4_msgs.git ~/px4_ros/src/px4_msgs \
+    && git -C ~/px4_ros/src/px4_msgs reset --hard daee1217b8834cb5293f7913bd7f0850c882ffb7 \
     && cp -r /tmp/px4_ros/src/* ~/px4_ros/src \
     && rm -rf /root/px4_ros/src/px4_msgs/msg/* \
         /root/px4_ros/src/px4_ros_com/src/examples \
@@ -189,6 +192,7 @@ FROM stage_mid as stage_mavr
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN git clone https://github.com/mavlink-router/mavlink-router.git /root/mavlink-router \
+    && git -C /root/mavlink-router reset --hard b5e1adb812f5094740d17d4f4a02c2ed80720185 \
     && cd /root/mavlink-router \
     && git submodule update --init --recursive \
     && meson setup build . \

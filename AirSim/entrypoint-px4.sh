@@ -1,44 +1,15 @@
 #!/bin/bash
 
-# Start virtual X server in the background
-# - DISPLAY default is :99, set in dockerfile
-# - Users can override with `-e DISPLAY=` in `docker run` command to avoid
-#   running Xvfb and attach their screen
-if [[ -x "$(command -v Xvfb)" && "$DISPLAY" == ":99" ]]; then
-	echo "Starting Xvfb"
-	Xvfb :99 -screen 0 1600x1200x24+32 &
-fi
-
-# # Check if the ROS_DISTRO is passed and use it
-# # to source the ROS environment
-# if [ -n "${ROS_DISTRO}" ]; then
-# 	source "/opt/ros/$ROS_DISTRO/setup.bash"
-# fi
-
-# Use the LOCAL_USER_ID if passed in at runtime
-if [ -n "${LOCAL_USER_ID}" ]; then
-	echo "Starting with UID : $LOCAL_USER_ID"
-	# modify existing user's id
-	usermod -u $LOCAL_USER_ID user
-	# run as user
-	exec gosu user "$@"
-else
-	exec "$@"
-fi
-
 if ${REBUILD}; then
-	cd /root/ros_ws && colcon build
+	cd /root/ros_ws
+	colcon build
+	source ./install/setup.sh
 fi
 
 if [ -n $PX4_SIM_HOST_ADDR ]; then
 	find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/airsim.VehicleClient()/airsim.VehicleClient(ip=\"${PX4_SIM_HOST_ADDR}\", port=41451)/g"
 	find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/airsim.MultirotorClient()/airsim.MultirotorClient(ip=\"${PX4_SIM_HOST_ADDR}\", port=41451)/g"
 fi
-
-# if ${WSL}; then
-# 	find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/airsim.VehicleClient()/airsim.VehicleClient(ip = str(os.environ\['simhost']), port=41451)/g"
-# 	#find /root/AirSim/python -type f -name "*.py" -print0 | xargs -0 sed -i "s/ip = str(os.environ\['simhost']), port=41451//g" for reverse
-# fi
 
 rm -rf /root/shared/Map.png &
 rm -rf /root/shared/simOn &
@@ -54,10 +25,11 @@ do
 done
 
 echo "Simulator startup! Generating Objects"
-python3 /root/AirSim/python/spawnObject.py -a SM_SP_01 -r 240 240
+python3 /root/AirSim/python/spawnObject.py -a Pine_01 -r 240 240
 sleep 0.5s
 
 python3 /root/AirSim/python/moveUAV.py
+sleep 5s
 
 $build_path/bin/px4 -d "$build_path/etc" -w $build_path -s $build_path/etc/init.d-posix/rcS &
 nohup mavlink-routerd -e 172.19.0.7:14550 127.0.0.1:14550 &
@@ -88,6 +60,8 @@ echo "Found generated map! Copying to RRT directory"
 sleep 1s
 
 mkdir /root/ros_ws/src/integration/integration/PathPlanning/Map/
+sleep 1s
+
 cp $mapImg /root/ros_ws/src/integration/integration/PathPlanning/Map/Map.png
 sleep 5s
 
