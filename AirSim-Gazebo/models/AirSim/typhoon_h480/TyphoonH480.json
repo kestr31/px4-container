@@ -23,6 +23,7 @@
             "Sensors": {
                 "RPLIDAR_A3": { 
                     "SensorType": 6,
+					"Range": 20,
                     "Enabled" : true,
                     "NumberOfChannels": 16,
                     "RotationsPerSecond": 10,
