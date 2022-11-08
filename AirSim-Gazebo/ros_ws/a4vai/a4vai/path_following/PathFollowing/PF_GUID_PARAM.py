@@ -28,9 +28,7 @@ class PF_GUID_PARAM():
         pass
 
     def PF_GUID_PARAM_Module(self, PlannedX, PlannedY, PlannedZ, PlannnedIndex, Pos, Vn, AngEuler, GPR_output, outNDO, Flag_Guid_Param):
-        print("In function")
-        ### Todo kdh
-        # Flag_Guid_Param = 2
+
         outNDO_ = np.array(outNDO)
         #.. MPPI
         if Flag_Guid_Param == 0:
@@ -41,7 +39,7 @@ class PF_GUID_PARAM():
             SPDCMD  =   max(min(SPDCMD, 2.5), 1.0)
             LAD     =   max(min(LAD, 2.5), 1.0)
         else:
-            LAD, SPDCMD     =   2., 2.
+            LAD, SPDCMD     =   2. , 2.
 
         return LAD, SPDCMD
 
@@ -89,9 +87,7 @@ class PF_GUID_PARAM():
         return LAD, SPDCMD
 
     def MPPI(self, PlannedX, PlannedY, PlannedZ, PlannnedIndex, Pos, Vn, AngEuler, GPR_output):
-        print("In MPPI function")
-        
-        print("Device Select")
+
         WPs_ =  np.transpose(np.array([PlannedX, PlannedY, PlannedZ]))
         WPs  =  WPs_.copy()
         # MPPI params.
@@ -103,7 +99,6 @@ class PF_GUID_PARAM():
         u1_MPPI         =   self.MPPIParams.u1_MPPI.copy()
         u2_MPPI         =   self.MPPIParams.u2_MPPI.copy()
         est_delAccn     =   GPR_output.copy()
-        print("Debug ---1")
         # set MPPI params & vars
         arr_intMPPI     =   np.array([K, N]).astype(np.int32)
         arr_u1_MPPI     =   np.array(u1_MPPI).astype(np.float64)
@@ -112,7 +107,6 @@ class PF_GUID_PARAM():
         arr_delta_u2    =   var2*np.random.randn(N,K).astype(np.float64)
         arr_stk         =   np.zeros(K).astype(np.float64)
         arr_delAccn     =   np.array(est_delAccn).astype(np.float64)
-        print("Debug ---2")
         
         gpu_intMPPI     =   cuda.mem_alloc(arr_intMPPI.nbytes)
         gpu_u1_MPPI     =   cuda.mem_alloc(arr_u1_MPPI.nbytes)
@@ -121,7 +115,6 @@ class PF_GUID_PARAM():
         gpu_delta_u2    =   cuda.mem_alloc(arr_delta_u2.nbytes)
         gpu_stk         =   cuda.mem_alloc(arr_stk.nbytes)
         gpu_delAccn     =   cuda.mem_alloc(arr_delAccn.nbytes)
-        print("Debug ---3")
         cuda.memcpy_htod(gpu_intMPPI,arr_intMPPI)
         cuda.memcpy_htod(gpu_u1_MPPI,arr_u1_MPPI)
         cuda.memcpy_htod(gpu_delta_u1,arr_delta_u1)
@@ -129,8 +122,6 @@ class PF_GUID_PARAM():
         cuda.memcpy_htod(gpu_delta_u2,arr_delta_u2)
         cuda.memcpy_htod(gpu_stk,arr_stk)
         cuda.memcpy_htod(gpu_delAccn,arr_delAccn)
-
-        print("Debug ---4")
 
         # model & scenario params & vars
         prevWPidx       =   max(0, PlannnedIndex - 1)
@@ -152,8 +143,6 @@ class PF_GUID_PARAM():
         rho             =   self.GCUParams.rho
         W1              =   self.GCUParams.W1_cost
         W2              =   self.GCUParams.W2_cost
-
-        print("Debug ---5")
         
         # set model & scenario params & vars
         arrWPParams     =   np.array([prevWPidx, numWPs]).astype(np.int32)
@@ -161,23 +150,16 @@ class PF_GUID_PARAM():
         arrModelParams  =   np.array([dt, desSpd_weight, Kgain_PG, tau_control[0], tau_control[1], tau_control[2], \
             Mass, throttle_Hover, g0, AccLim, Kp_vel, Ki_vel, Kd_vel, CD0_md, Sref, rho, W1, W2]).astype(np.float64)
         arrInitStates   =   np.array([Pos, Vn, AngEuler]).astype(np.float64)
-        print("Debug ---6")
-        #########################   ERROR   ##############################################
-        ##########  pycuda.autoinit 이게 잘 수행이 안되는건지
-        ##########  mem_alloc 초기화 다시 안해서 그런가 바로 mem_alloc하면  MPPI module Start failed LogicError('cuMemAlloc failed: invalid argument') 이 애러가 발생하는듯..
-        ##########  너랑 우리랑 환경이 달라서 생길수 있는 문제긴 한데 
+
         gpuWPParams     =   cuda.mem_alloc(arrWPParams.nbytes)
         gpuWPsNED       =   cuda.mem_alloc(arrWPsNED.nbytes)
         gpuModelParams  =   cuda.mem_alloc(arrModelParams.nbytes)
         gpuInitStates   =   cuda.mem_alloc(arrInitStates.nbytes)
-        print("Debug ---7")
         cuda.memcpy_htod(gpuWPParams,arrWPParams)
         cuda.memcpy_htod(gpuWPsNED,arrWPsNED)
         cuda.memcpy_htod(gpuModelParams,arrModelParams)
         cuda.memcpy_htod(gpuInitStates,arrInitStates)
         
-
-        print("In MPPI Set Init")
 
         mod     =   SourceModule("""
         // calculation functions
@@ -1026,5 +1008,5 @@ class PF_GUID_PARAM():
         
         self.MPPIParams.u1_MPPI =   u1_MPPI.copy()
         self.MPPIParams.u2_MPPI =   u2_MPPI.copy()
-
+        print("LAD  :   ", LAD, "   SPDCMD  :   ", SPDCMD)
         return LAD, SPDCMD

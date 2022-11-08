@@ -69,7 +69,7 @@ services:
       - AIRSIM_HOST=172.21.0.5
       - PX4_SIM_HOST_ADDR=172.21.0.6
       - PX4_SIM_MODEL=typhoon_inha
-      - PX4_SIM_WOLRLD=grass
+      - PX4_SIM_WOLRLD=grass_dryden
       - NO_PXH=1
       # - PX4_HOME_LAT=28.452386
       # - PX4_HOME_LON=-13.867138

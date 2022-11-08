@@ -90,27 +90,28 @@ class PFGuidModule(Node):
         self.declare_subscriber_px4()
         self.PFGuidService_ = self.create_service(PathFollowingGuid, 'path_following_guid', self.PFGuidSRVCallback)
         ######  PUB
-        self.Waypoint_Indx_Publisher_ = self.create_publisher(WayPointIndex, '/waypoint_indx', self.QOS_Sub_Sensor)
+        # self.Waypoint_Indx_Publisher_ = self.create_publisher(WayPointIndex, '/waypoint_indx', self.QOS_Sub_Sensor)
         self.PF_Guid2PF_Att_Publisher_ = self.create_publisher(PFGuid2PFAtt, '/pf_guid_2_pf_att', self.QOS_Sub_Sensor)
         ######
+        self.WaypointIndexSubscriber_ = self.create_subscription(WayPointIndex, '/waypoint_indx', self.Waypoint_index_callback, self.QOS_Sub_Sensor)
         self.PF_Att2PF_GuidSubscriber_ = self.create_subscription(PFAtt2PFGuid, '/pf_att_2_pf_guid', self.PF_Att2PF_Guid_callback, self.QOS_Sub_Sensor)
         self.PF_Gpr2PF_GuidSubscriber_ = self.create_subscription(PFGpr2PFGuid, '/pf_gpr_2_pf_guid', self.PF_GPR2PF_Guid_callback, self.QOS_Sub_Sensor)
         print("===== Path Following Guidance Node is Initialize =====")
         
 #################################################################################################################
 
-    def waypoint_index_calculator(self):
-        if np.sqrt((self.x - self.PlannedX[self.PlannedIndex])**2 + (self.y - self.PlannedY[self.PlannedIndex]) ** 2) < 3.0:
-            self.PlannedIndex += 1
-            print("Waypoint index ++")
-        else : 
-            pass
+    # def waypoint_index_calculator(self):
+    #     if np.sqrt((self.x - self.PlannedX[self.PlannedIndex])**2 + (self.y - self.PlannedY[self.PlannedIndex]) ** 2) < 3.0:
+    #         self.PlannedIndex += 1
+    #         print("Waypoint index ++")
+    #     else : 
+    #         pass
         
-    def Waypoint_indexPublisher(self):
-        msg = WayPointIndex()
-        msg.timestamp = self.response_timestamp
-        msg.waypoint_index = self.PlannedIndex
-        self.Waypoint_Indx_Publisher_.publish(msg)
+    # def Waypoint_indexPublisher(self):
+    #     msg = WayPointIndex()
+    #     msg.timestamp = self.response_timestamp
+    #     msg.waypoint_index = self.PlannedIndex
+    #     self.Waypoint_Indx_Publisher_.publish(msg)
         
     def PF_GUID_2_PF_ATT_Publisher(self):
         msg = PFGuid2PFAtt()
@@ -128,7 +129,7 @@ class PFGuidModule(Node):
         
     def PFGuidCallback(self):
         if self.requestFlag is True :
-            self.waypoint_index_calculator()
+            # self.waypoint_index_calculator()
             # print("flag = ",str(self.Flag_Guid_Param))
             
             self.GPR_output = [self.GPR_output_data[i * self.GPR_output_index:(i + 1) * self.GPR_output_index] for i in range((len(self.GPR_output_data) - 1 + self.GPR_output_index) // self.GPR_output_index )]
@@ -140,13 +141,14 @@ class PFGuidModule(Node):
             Pos         =   [self.x, self.y, self.z]
             Vn          =   [self.vx, self.vy, self.vz]
             AngEuler    =   [self.phi * m.pi /180., self.theta * m.pi /180., self.psi * m.pi /180.]
+            print('waypoint index = ', self.PlannedIndex)
             # function
             LAD, SPDCMD = self.PF_GUID_PARAM_MOD.PF_GUID_PARAM_Module(
                 self.PlannedX, self.PlannedY, self.PlannedZ, self.PlannedIndex, Pos, Vn, AngEuler, self.GPR_output, self.outNDO, self.Flag_Guid_Param)
             # output
             self.LAD    =   LAD
             self.SPDCMD =   SPDCMD
-            self.Waypoint_indexPublisher()
+            # self.Waypoint_indexPublisher()
             self.PF_GUID_2_PF_ATT_Publisher()
         else : 
             pass
@@ -261,6 +263,9 @@ class PFGuidModule(Node):
 
         return Roll, Pitch, Yaw
 
+
+    def Waypoint_index_callback(self, msg):
+        self.PlannedIndex = msg.waypoint_index
 
 def main(args=None):
     rclpy.init(args=args)

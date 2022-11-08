@@ -8,7 +8,7 @@
 	"ClockType": "SteppableClock",
     "SimMode": "Multirotor",
     "Vehicles": {
-        "Typhoon_1": {       
+        "Typhoon_1": {
             "VehicleType": "SimpleFlight",
 			"Model": "Typhoon_H480",
 			"PawnPath": "Typhoon",
@@ -29,7 +29,7 @@
                     "PointsPerSecond": 100000,
                     "X": 0.025, "Y": 0, "Z": 0.0943,
                     "Roll": 0, "Pitch": 0, "Yaw" : 0,
-                    "VerticalFOVUpper": 0,
+                    "VerticalFOVUpper": 7,
                     "VerticalFOVLower": 0,
                     "HorizontalFOVStart": -45,
                     "HorizontalFOVEnd": 45,
@@ -78,8 +78,7 @@
 						}
 					],
 					"Gimbal": {
-					  "Stabilization": 0,
-					  "Pitch": 0, "Roll": 0
+					  "Pitch": 1, "Roll": 1
 					},
 					"X": 0.076, "Y": 0.0115, "Z": 0.038,
 					"Pitch": 0, "Roll": 0, "Yaw": 0
@@ -126,7 +125,7 @@
 					],
 					"Gimbal": {
 					  "Stabilization": 0,
-					  "Pitch": 0, "Roll": 0
+					  "Pitch": 1, "Roll": 1
 					},
 					"X": 0.3, "Y": -0.01, "Z": 0.038,
 					"Pitch": 0, "Roll": 0, "Yaw": 0

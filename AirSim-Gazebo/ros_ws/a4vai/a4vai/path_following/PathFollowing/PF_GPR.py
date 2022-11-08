@@ -42,7 +42,7 @@ class PF_GPR():
 
         self.GPR_estimate(x_new,testSize=self.N,dt=self.dt_Est)
 
-        GPR_out     =   self.yPred        
+        GPR_out     =   self.yPred
         return GPR_out
 
     def GPR_dataset(self, x_new, Y_new):

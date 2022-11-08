@@ -78,7 +78,7 @@ class PFAttitudeCmdModule(Node):
         self.qosProfileGen()
         self.declare_subscriber_px4()
         self.PFAttitudeCmdService_ = self.create_service(PathFollowingSetpoint, 'path_following_att_cmd', self.PF_ATT_SRV_Callback)
-        self.PF_ATTITUDE_CMD_ = PF_ATTITUDE_CMD(0.004)
+        self.PF_ATTITUDE_CMD_ = PF_ATTITUDE_CMD(0.005)
         
         self.First_Flag = True
         self.InitTime = 0
@@ -110,9 +110,9 @@ class PFAttitudeCmdModule(Node):
                 Vn          =   [self.vx, self.vy, self.vz]
                 AngEuler    =   [self.phi * math.pi /180., self.theta * math.pi /180., self.psi * math.pi /180.]
                 Acc_disturb =   [0., 0., 0.]
-        ### Todo kdh
-                self.LAD = 2.0
-                self.SPDCMD = 2.0
+        #
+                # self.LAD = 2.0
+                # self.SPDCMD = 2.0
                 self.TargetThrust, self.TargetAttitude, self.TargetPosition, self.TargetYaw, self.outNDO = \
                     self.PF_ATTITUDE_CMD_.PF_ATTITUDE_CMD_Module(Time, self.PlannedX, self.PlannedY, self.PlannedZ, self.PlannedIndex, Pos, Vn, AngEuler, Acc_disturb, self.LAD, self.SPDCMD)
                     

@@ -128,40 +128,40 @@ else
 
 	# GAZEBO STARTUP CHECKER: CONSISTED OF FOUR GATES
 	# Wait Until Gazebo Starts Up: Gate 1: Check .gazebo exists (Dir)
-	gazeoDir=$(find /root -type d -name ".gazebo" -print)
-	while [ -z ${gazeoDir1} ];
-	do
-		gazeoDir1=$(find /root -type d -name ".gazebo" -print)
-		echo "Waiting until gazebo starts up"
-		sleep 1s
-	done
+	# gazeoDir=$(find /root -type d -name ".gazebo" -print)
+	# while [ -z ${gazeoDir1} ];
+	# do
+	# 	gazeoDir1=$(find /root -type d -name ".gazebo" -print)
+	# 	echo "Waiting until gazebo starts up"
+	# 	sleep 1s
+	# done
 
-	# Wait Until Gazebo Starts Up: Gate 2: Check client-11345 exists (Dir)
-	gazeoDir2=$(find /root/.gazebo -type d -name "client-11345" -print)
-	while [[ -z ${gazeoDir2} ]];
-	do
-		gazeoDir2=$(find /root/.gazebo -type d -name "client-11345" -print)
-		echo "Waiting until gazebo starts up"
-		sleep 1s
-	done
+	# # Wait Until Gazebo Starts Up: Gate 2: Check client-11345 exists (Dir)
+	# gazeoDir2=$(find /root/.gazebo -type d -name "client-11345" -print)
+	# while [[ -z ${gazeoDir2} ]];
+	# do
+	# 	gazeoDir2=$(find /root/.gazebo -type d -name "client-11345" -print)
+	# 	echo "Waiting until gazebo starts up"
+	# 	sleep 1s
+	# done
 
-	# Wait Until Gazebo Starts Up: Gate 3: Check default.log exists (Dir)
-	gazeboStat1=$(find /root/.gazebo/client-11345 -type f -name "default.log" -print)
-	while [[ -z ${gazeboStat1} ]];
-	do
-		gazeboStat1=$(find /root/.gazebo/client-11345 -type f -name "default.log" -print)
-		echo "Waiting until gazebo starts up"
-		sleep 1s
-	done
+	# # Wait Until Gazebo Starts Up: Gate 3: Check default.log exists (Dir)
+	# gazeboStat1=$(find /root/.gazebo/client-11345 -type f -name "default.log" -print)
+	# while [[ -z ${gazeboStat1} ]];
+	# do
+	# 	gazeboStat1=$(find /root/.gazebo/client-11345 -type f -name "default.log" -print)
+	# 	echo "Waiting until gazebo starts up"
+	# 	sleep 1s
+	# done
 
-	# Wait Until Gazebo Starts Up: Gate 4: Check certain log in default.log exists (String)
-	gazeboStat2=$(cat /root/.gazebo/client-11345/default.log | grep "Connected to gazebo master")
-	while [[ -z ${gazeboStat2} ]];
-	do
-		gazeboStat2=$(cat /root/.gazebo/client-11345/default.log | grep "Connected to gazebo master")
-		echo "Waiting until gazebo starts up"
-		sleep 1s
-	done
+	# # Wait Until Gazebo Starts Up: Gate 4: Check certain log in default.log exists (String)
+	# gazeboStat2=$(cat /root/.gazebo/client-11345/default.log | grep "Connected to gazebo master")
+	# while [[ -z ${gazeboStat2} ]];
+	# do
+	# 	gazeboStat2=$(cat /root/.gazebo/client-11345/default.log | grep "Connected to gazebo master")
+	# 	echo "Waiting until gazebo starts up"
+	# 	sleep 1s
+	# done
 
 	# Run AirSim-Gazebo Integration Binary
 	# This only works on default AirSim container IP (172.21.0.5)

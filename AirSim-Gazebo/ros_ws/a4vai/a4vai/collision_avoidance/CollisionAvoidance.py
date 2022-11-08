@@ -58,7 +58,7 @@ class Collision_Avoidance(Node):
         # self.JYCollision = CollisionAvoidance_jy()
         self.JBNUCollision = JBNU_Collision()
         self.current_frame = []
-        
+        self.depth_colored_frame = []
         ##  Output
         self.vel_cmd_x = 0.0
         self.vel_cmd_y = 0.0
@@ -86,7 +86,7 @@ class Collision_Avoidance(Node):
         self.CAToControlPublisher_.publish(msg)
 
     def CACallback(self):
-        self.vel_cmd_x, self.vel_cmd_y, self.vel_cmd_z, self.vel_cmd_yaw = self.JBNUCollision.CA(self.current_frame)
+        self.vel_cmd_x, self.vel_cmd_y, self.vel_cmd_z, self.vel_cmd_yaw = self.JBNUCollision.CA(self.depth_colored_frame)
         self.CAToControlPublisher()
         
     def qosProfileGen(self):
@@ -160,11 +160,18 @@ class Collision_Avoidance(Node):
         #     requestFlag = True
             
     def CameraCallback(self, msg):
-
         current_frame = self.CvBridge.imgmsg_to_cv2(msg)
-        #print(current_frame)
-        current_frame = np.interp(current_frame, (0.0, 10.0), (0, 255))
-        self.current_frame = cv2.applyColorMap(cv2.convertScaleAbs(current_frame,alpha=1),cv2.COLORMAP_JET)
-        # cv2.imshow("depth_camera_rgb", self.current_frame)
-        # cv2.imshow("depth", current_frame)
+        self.current_frame = np.asarray(current_frame.tolist(), dtype = np.float32)
+        depth_img_in_meters = self.current_frame.reshape(640, 480, 1)
+        # print(type(depth_img_in_meters))
+        depth_center = depth_img_in_meters[:,240:250]
+        min_distance = np.amin(depth_center)
+        print(min_distance)
+        # cv2.imshow("depth", self.current_frame)
         # cv2.waitKey(1)
+        threshold_frame = np.interp(current_frame, (0.0, 10.0), (0, 255))
+        self.depth_colored_frame = cv2.applyColorMap(cv2.convertScaleAbs(threshold_frame,alpha=1),cv2.COLORMAP_JET)
+        
+
+        # cv2.imshow("depth_camera_rgb", self.current_frame)
+   

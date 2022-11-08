@@ -56,8 +56,8 @@ class DataMPPI():
         self.init_u2_MPPI   =   1.5
         self.u2_MPPI        =   self.init_u2_MPPI*ones(self.N)
         # limit
-        self.u1_min         =   0.1
-        self.u2_min         =   0.1
+        self.u1_min         =   0.5
+        self.u2_min         =   0.5
         
         pass
 
