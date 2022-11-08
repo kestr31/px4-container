@@ -7,11 +7,12 @@ import os
 import numpy as np
 import threading
 
-def genObj(asset_name,region,low,high):
+def genObj(asset_name,region,low,high,numstart):
     objList = list()
     for i in range(low,high):
         client = airsim.VehicleClient()
-        desired_name = f"{asset_name}_airsim_{i}"
+        desgn = i + numstart
+        desired_name = f"{asset_name}_airsim_{desgn}"
         scale = airsim.Vector3r(random.uniform(1.0,2.0), random.uniform(1.0,2.0), random.uniform(1.0,2.0))
 
         posX = random.randrange(-region[1]+250,region[1]+250)
@@ -48,6 +49,9 @@ def main():
     required.add_argument("-n", "--number", dest="nobject",type=int,
                           help="Number of assets to create (int). If not set, script will create only 1 of it",
                           metavar="NUM", default=1)
+    required.add_argument("-d", "--desnum", dest="design_num",type=int,
+                          help="Number of Startpoint of asset name",
+                          metavar="DEN", default=0)                 
 
     args = parser.parse_args()
 
@@ -55,13 +59,14 @@ def main():
     startTime = time.time()
     print(args.nobject)
 
+
     if args.nobject > 0:
         n = args.nobject
-        t1 = threading.Thread(target=genObj, args=(args.asset_name,args.region,1, n))
-        t2 = threading.Thread(target=genObj, args=(args.asset_name,args.region,n+1, 2*n))
-        t3 = threading.Thread(target=genObj, args=(args.asset_name,args.region,2*n+1, 3*n))
-        t4 = threading.Thread(target=genObj, args=(args.asset_name,args.region,3*n+1, 4*n))
-        t5 = threading.Thread(target=genObj, args=(args.asset_name,args.region,4*n+1, 5*n))
+        t1 = threading.Thread(target=genObj, args=(args.asset_name,args.region,1, n,args.design_num))
+        t2 = threading.Thread(target=genObj, args=(args.asset_name,args.region,n+1, 2*n,args.design_num+n))
+        t3 = threading.Thread(target=genObj, args=(args.asset_name,args.region,2*n+1, 3*n, args.design_num+n*2))
+        t4 = threading.Thread(target=genObj, args=(args.asset_name,args.region,3*n+1, 4*n, args.design_num+n*3))
+        t5 = threading.Thread(target=genObj, args=(args.asset_name,args.region,4*n+1, 5*n, args.design_num+n*4))
 
         t1.start()
         t2.start()
