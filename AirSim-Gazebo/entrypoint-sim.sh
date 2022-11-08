@@ -48,7 +48,7 @@ else
 
 	# Spawn Pine Tree in square area of (-240,-240) to (240,240)
 	echo "Simulator startup! Generating Objects"
-	python3 /root/AirSim/python/spawnObject.py -a Pine_01 -n 10 -r 240 240 -d 0
+	python3 /root/AirSim/python/spawnObject.py -a Pine_01 -n 60 -r 240 240 -d 0
 	sleep 10s
 	
 	python3 /root/AirSim/python/genMap.py

@@ -29,7 +29,7 @@ services:
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
       - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/models/AirSim/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
       # - ${HOME}/gitcodes/px4-container/AirSim/models/typhoon_h480/TyphoonH480.json:/home/user/Documents/AirSim/settings.json
-      - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-sim.sh:/usr/local/bin/entrypoint.sh
+      # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/entrypoint-sim.sh:/usr/local/bin/entrypoint.sh
       # - ${HOME}/gitcodes/px4-container/AirSim-Gazebo/LinuxNoEditor_temp:/home/user/ForestDeploy
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
       # ---------ENABLE FOR WSL2 GPU ACCELERATION--------
@@ -45,7 +45,7 @@ services:
       px4-sitl-as-gz:
         ipv4_address: 172.21.0.5
     container_name: sitl-as
-    image: kestr3l/px4:airsimg-gpu-0.0.3e
+    image: kestr3l/px4:airsimg-gpu-0.0.3
     deploy:
       resources:
         reservations:
@@ -76,7 +76,7 @@ services:
       # - PX4_HOME_ALT=28.5
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
-      # - HEADLESS=1
+      - HEADLESS=1
       # - DEBUG_ENTRYPOINT=1
       # - PX4_SITL_DEBUGGER=ide
       # - REBUILD_RPKG=1
@@ -108,7 +108,7 @@ services:
       px4-sitl-as-gz:
         ipv4_address: 172.21.0.6
     container_name: sitl-gz-px4
-    image: kestr3l/px4:airsimg-gpu-0.0.3e
+    image: kestr3l/px4:airsimg-gpu-0.0.3
     deploy:
       resources:
         reservations:
