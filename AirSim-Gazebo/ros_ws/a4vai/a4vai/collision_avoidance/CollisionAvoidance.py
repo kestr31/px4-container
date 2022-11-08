@@ -171,7 +171,8 @@ class Collision_Avoidance(Node):
         # cv2.waitKey(1)
         threshold_frame = np.interp(current_frame, (0.0, 10.0), (0, 255))
         self.depth_colored_frame = cv2.applyColorMap(cv2.convertScaleAbs(threshold_frame,alpha=1),cv2.COLORMAP_JET)
-        
+        cv2.imshow("depth_camera_rgb", self.depth_colored_frame)
+        cv2.waitKey(1)
 
         # cv2.imshow("depth_camera_rgb", self.current_frame)
    

@@ -88,11 +88,12 @@ RUN \
 
 COPY AirSim-Gazebo/ros_ws /root/ros_ws/src
 
-RUN source /opt/ros/galactic/setup.bash \
+WORKDIR /root/ros_ws
+
+RUN \
+	source /opt/ros/galactic/setup.bash \
 	&& colcon build \
-		--build-base ~/ros_ws/build \
-		--install-base ~/ros_ws/install \
-		--base-paths ~/ros_ws/src
+		--symlink-install
 
 
 FROM stage_deps as stage_px4sitl
@@ -127,8 +128,7 @@ COPY --from=stage_airsim /root/AirSim/GazeboDrone /root/AirSim/GazeboDrone
 COPY --from=stage_airsim /root/AirSim/ros2 /root/AirSim/ros2
 COPY --from=stage_airsim /root/.local /root/.local
 
-# COPY --from=stage_rnode /root/ros_ws /root/ros_ws
-COPY AirSim-Gazebo/ros_ws /root/ros_ws/src
+COPY --from=stage_rnode /root/ros_ws /root/ros_ws
 
 COPY AirSim-Gazebo/python /root/AirSim/python
 COPY scripts /root/tools

@@ -16,8 +16,8 @@ class JBNU_Collision():
         Image = img2d
         Image = cv2.resize(Image, (300,300), cv2.INTER_AREA)
 
-        cv2.imshow('Test', Image)
-        cv2.waitKey(1)
+        # cv2.imshow('Test', Image)
+        # cv2.waitKey(1)
 
         Image = np.expand_dims(Image, axis=0)
 

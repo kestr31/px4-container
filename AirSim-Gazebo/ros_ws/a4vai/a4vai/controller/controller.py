@@ -791,7 +791,7 @@ class ControllerNode(Node):
         min_dist = np.min(dist)
 
         if self.z < -2.0:
-            if min_dist < 4:
+            if min_dist < 5.0:
                 if self.ObstacleFlag is False :
                     self.waypoint_pass_flag = True
                     self.phase_time = self.get_clock().now().nanoseconds

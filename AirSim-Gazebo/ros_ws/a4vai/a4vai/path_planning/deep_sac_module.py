@@ -110,8 +110,8 @@ class SAC:
         ############### Map 회전 방향 확인 필요 ################
         # RawImage = Map
         RawImage = (cv2.imread("/root/ros_ws/src/a4vai/a4vai/path_planning/Map/RawImage.png", cv2.IMREAD_GRAYSCALE))
-        RawImageNeo =cv2.rotate(RawImage, cv2.ROTATE_90_CLOCKWISE)
-        RawImage2 = cv2.flip(RawImageNeo, 0)
+        # RawImageNeo =cv2.rotate(RawImage, cv2.ROTATE_90_CLOCKWISE)
+        RawImage2 = cv2.flip(RawImage, 0)
         Image_New = np.uint8(np.uint8((255 - RawImage2) / 255))
         # Image_New = np.zeros((MapSize, MapSize))
 
@@ -410,6 +410,8 @@ class SAC:
             cv2.line(imageLine, (Im_i, Im_j), (Im_iN, Im_jN), (0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
 
         cv2.imwrite('Final/TestResult_prunningNew0.png', imageLine)  ################################
+        # cv2.imshow('GenPath', imageLine)
+        # cv2.waitKey(1)
 
         # print(pruned_x_points)
         
@@ -472,24 +474,24 @@ class SAC:
         # prunedNew_y_points[9] = 500.0
         # prunedNew_x_points[9] = 520.0
 
-        # #.. start - designed path
-        prunedNew_x_points_array    =   np.array([prunedNew_x_points])
-        prunedNew_y_points_array    =   np.array([prunedNew_y_points])
+    #     # #.. start - designed path
+    #     prunedNew_x_points_array    =   np.array([prunedNew_x_points])
+    #     prunedNew_y_points_array    =   np.array([prunedNew_y_points])
 
-        WPx     =   np.array([1., 1.5, 9.0,  11.9, 16.0, 42.5, 44.0, 44.6, 42.2, 21.0, \
-            17.9, 15.6, 13.9, 13.5, 16.4, 21.0, 28.9, 44.4, 43.8, 40.4, 26.9, -15.0, -25.0, -20.0, -10.0
-            ])
-        WPy     =   np.array([1., 7.7, 44.0, 46.4, 47.0, 46.7, 43.9, 38.1, 35.2, 34.7, \
-            33.4, 29.9, 23.6, 7.9,  5.0,  3.1,  4.3,  25.5, 30.8, 34.3, 38.2, 35.0,  10.0,   0.0, -5.0
-                ])
-        N = len(WPx)
+    #     WPx     =   np.array([1., 1.5, 9.0,  11.9, 16.0, 42.5, 44.0, 44.6, 42.2, 21.0, \
+    #         17.9, 15.6, 13.9, 13.5, 16.4, 21.0, 28.9, 44.4, 43.8, 40.4, 26.9, -15.0, -25.0, -20.0, -10.0
+    #         ])
+    #     WPy     =   np.array([1., 7.7, 44.0, 46.4, 47.0, 46.7, 43.9, 38.1, 35.2, 34.7, \
+    #         33.4, 29.9, 23.6, 7.9,  5.0,  3.1,  4.3,  25.5, 30.8, 34.3, 38.2, 35.0,  10.0,   0.0, -5.0
+    #             ])
+    #     N = len(WPx)
 
-        prunedNew_x_points_array[0, 0:N]   =   WPx.copy()
-        prunedNew_y_points_array[0, 0:N]   =   WPy.copy()
+    #     prunedNew_x_points_array[0, 0:N]   =   WPx.copy()
+    #     prunedNew_y_points_array[0, 0:N]   =   WPy.copy()
 
-        prunedNew_x_points  =   prunedNew_x_points_array[0].tolist()
-        prunedNew_y_points  =   prunedNew_y_points_array[0].tolist()
-    #..  end  - designed path
+    #     prunedNew_x_points  =   prunedNew_x_points_array[0].tolist()
+    #     prunedNew_y_points  =   prunedNew_y_points_array[0].tolist()
+    # #..  end  - designed path
 
 
         return prunedNew_y_points, prunedNew_x_points, prunedNew_z_points
