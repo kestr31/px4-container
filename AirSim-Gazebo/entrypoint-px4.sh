@@ -74,6 +74,7 @@ sleep 1s
 # Copy Gnerated Map to Process in Path-Planning Directory
 echo "Found generated map! Copying to RRT directory"
 # mkdir /root/ros_ws/src/a4vai/a4vai/path_planning/Map &&
+rm -rf /root/ros_ws/src/a4vai/a4vai/path_planning/Map
 mkdir /root/ros_ws/src/a4vai/a4vai/path_planning/Map
 cp $mapImg /root/ros_ws/src/a4vai/a4vai/path_planning/Map/RawImage.png
 sleep 5s
@@ -124,7 +125,7 @@ else
 	echo " / ___ |/ /_____/ /_/ / /_/ /_/   "
 	echo "/_/  |_/_/      \____/\____(_)    "
 	HEADLESS=${HEADLESS} make -C /root/PX4-Autopilot px4_sitl_rtps gazebo_${PX4_SIM_MODEL}__${PX4_SIM_WOLRLD} &
-	sleep 1s
+	sleep 10s
 
 	# GAZEBO STARTUP CHECKER: CONSISTED OF FOUR GATES
 	# Wait Until Gazebo Starts Up: Gate 1: Check .gazebo exists (Dir)
@@ -168,7 +169,7 @@ else
 	# If IP Changed, You Must Rebuid GazeboDrone Package Manually
 	# Refer to 'stage_airsim' in corresponding Dockerfile
 	/root/AirSim/GazeboDrone/build/GazeboDrone &
-	sleep 3s
+	sleep 5s
 
 	echo "    _____ ____________       ______________    ____  ______ "
 	echo "   / ___//  _/_  __/ /      / ___/_  __/   |  / __ \/_  __/ "
@@ -178,14 +179,22 @@ else
 fi
 
 
-# ros2 run a4vai deep_sac_module &
+ros2 run a4vai deep_sac_module &
+sleep 5s
 
-# ros2 run a4vai path_following_guid &
-# ros2 run a4vai path_following_att &
+ros2 run a4vai path_following_guid &
+sleep 5s
 
-# ros2 run a4vai JBNU_module &
+ros2 run a4vai path_following_att &
+sleep 5s
 
-# ros2 run a4vai controller &
+ros2 run a4vai path_following_gpr &
+sleep 5s
+
+ros2 run a4vai JBNU_module &
+sleep 5s
+
+ros2 run a4vai controller &
 
 # # Keep container running. The Sleeping Beauty
 sleep infinity
