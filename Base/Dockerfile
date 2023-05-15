@@ -231,3 +231,11 @@ EXPOSE 14556/udp
 EXPOSE 14557/udp
 
 CMD ["/bin/bash"]
+
+# ---------- BUILD COMMAND ----------
+# DOCKER_BUILDKIT=1 docker build --no-cache \
+# --build-arg BASEIMAGE=nvidia/cuda \
+# --build-arg BASETAG=11.3.1-cudnn8-devel-ubuntu20.04 \
+# --build-arg PROCVER=gpu \
+# -t kestr3l/px4:base-gpu-0.0.4 \
+# -f ./Base/Dockerfile .

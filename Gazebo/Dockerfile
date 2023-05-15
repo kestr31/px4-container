@@ -131,3 +131,10 @@ COPY scripts/initRepo.sh /root/tools/initRepo.sh
 
 COPY Gazebo/entrypoint.sh /usr/local/bin/entrypoint.sh
 CMD ["/usr/local/bin/entrypoint.sh"]
+
+# ---------- BUILD COMMAND ----------
+# DOCKER_BUILDKIT=1 docker build --no-cache \
+# --build-arg BASEIMAGE=kestr3l/px4 \
+# --build-arg BASETAG=base-gpu-0.0.4 \
+# -t kestr3l/px4:gazebo-gpu-0.0.4 \
+# -f ./Gazebo/Dockerfile .

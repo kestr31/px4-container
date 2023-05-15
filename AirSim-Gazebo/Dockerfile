@@ -154,3 +154,10 @@ WORKDIR /root
 
 COPY AirSim-Gazebo/entrypoint-sim.sh /usr/local/bin/entrypoint.sh
 CMD [ "/usr/local/bin/entrypoint.sh" ]
+
+# ---------- BUILD COMMAND ----------
+# DOCKER_BUILDKIT=1 docker build --no-cache \
+# --build-arg BASEIMAGE=kestr3l/px4 \
+# --build-arg BASETAG=gazebo-gpu-0.0.4 \
+# -t kestr3l/px4:airsimg-gpu-0.0.4 \
+# -f ./AirSim-Gazebo/Dockerfile .
