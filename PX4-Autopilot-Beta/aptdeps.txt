@@ -1,0 +1,13 @@
+bat
+curl
+git
+gz-garden
+lsb-release
+mesa-utils
+mesa-vulkan-drivers
+neovim
+ros-dev-tools
+ros-humble-ros-base
+sudo
+wget
+zsh

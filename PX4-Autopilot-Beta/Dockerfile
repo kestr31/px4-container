@@ -1,0 +1,190 @@
+ARG BASEIMAGE
+ARG BASETAG
+
+# BASE STAGE FOR CACHINE APT PACKAGE LISTS
+FROM ${BASEIMAGE}:${BASETAG} as stage_apt
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ENV \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
+
+RUN \
+    rm -rf /etc/apt/apt.conf.d/docker-clean \
+	&& echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
+	&& sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list \
+    && apt-get update
+
+RUN \
+    apt install -y \
+        ca-certificates \
+        curl \
+        software-properties-common \
+        wget
+
+RUN \
+    add-apt-repository universe -y \
+    && add-apt-repository ppa:kisak/kisak-mesa -y
+
+RUN \
+    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+RUN \
+    wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null \
+    && apt-get update
+
+FROM ${BASEIMAGE}:${BASETAG} as stage_deps
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ENV \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
+
+RUN \
+    sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
+
+# DOWNLOAD 
+COPY PX4-Autopilot-Beta/aptdeps.txt /tmp/aptdeps.txt
+
+# UPGRADE THE BASIC ENVIRONMENT FIRST
+RUN \
+    --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
+    --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
+	apt-get upgrade -y
+
+# INSTALL ca-certifiactes TO AVOID CERTIFICATE ERROR FOR KISAK MESA DRIVERS
+RUN \
+    --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
+    --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
+	apt-get install --no-install-recommends -y \
+        ca-certificates
+
+# INSTALL PACKAGES AVAIABLE BY APT REPOSITORY
+RUN \
+    --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
+    --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
+	apt-get install --no-install-recommends --fix-missing -y $(cat /tmp/aptdeps.txt) \
+    && rm -rf /tmp/*
+
+# SET LOCALE TO en_UT.UTF-8
+RUN \
+    --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
+    --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
+    apt install -y \
+	    locales \
+    && locale-gen en_US en_US.UTF-8 \
+    && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+
+
+# ADD NON-ROOT USER user AND GRANT SUDO PERMISSION
+RUN \
+    groupadd user \
+    && useradd -ms /bin/zsh user -g user \
+    && echo "user ALL=NOPASSWD: ALL" >> /etc/sudoers
+
+# CHANGE USER TO NEWLY GENERATED user AND CHANGE WORKING DIRECTORY TO user's HOME
+USER user
+WORKDIR /home/user
+
+# FOR EASE OF DEVELOPMENT, INSTALL OH-MY-ZSH AND PLUGINS. SET ALIAS FOR CAT
+RUN \
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended \
+    && sed -i "s/robbyrussell/agnoster/g" ${HOME}/.zshrc \
+    && git clone https://github.com/zsh-users/zsh-autosuggestions.git \
+        ${HOME}/.oh-my-zsh/plugins/zsh-autosuggestions \
+    && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
+        ${HOME}/.oh-my-zsh/plugins/zsh-syntax-highlighting \
+    && sed -i "s/(git)/(git zsh-autosuggestions zsh-syntax-highlighting)/g" ${HOME}/.zshrc \
+    && echo "alias cat='batcat --paging=never'" >> ${HOME}/.zshrc
+
+
+FROM stage_deps as stage_app
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN \
+    git clone https://github.com/PX4/PX4-Autopilot.git -b v1.14.0-beta2 \
+    && git -C PX4-Autopilot submodule update --init --recursive
+
+RUN \
+    PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools \
+    && sudo apt-get autoremove -y \
+    && sudo apt-get clean autoclean \
+    && sudo rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
+
+RUN \
+    echo "source /opt/ros/humble/setup.zsh" >> ${HOME}/.zshrc
+
+RUN \
+    sudo usermod -aG dialout user
+RUN \
+    --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
+    --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
+    sudo apt install -y --no-install-recommends \
+        fuse \
+        gstreamer1.0-gl \
+        gstreamer1.0-libav \
+        gstreamer1.0-plugins-bad \
+        libfuse2 \
+        libpulse-mainloop-glib0 \
+        libqt5gui5
+RUN \
+    wget -P /home/user/QgroundControl https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage \
+    && chmod +x /home/user/QgroundControl/QGroundControl.AppImage
+COPY PX4-Autopilot-Beta/config /home/user/.config/QGroundControl.org
+
+
+RUN \
+    git clone https://github.com/eProsima/Micro-XRCE-DDS-Client.git \
+    &&  mkdir Micro-XRCE-DDS-Client/build
+WORKDIR /home/user/Micro-XRCE-DDS-Client/build
+RUN \
+    cmake .. \
+    && make
+WORKDIR /home/user
+
+
+RUN \
+    mkdir -p /home/user/px4_ros_uxrce_dds_ws/src \
+    && git clone https://github.com/eProsima/Micro-XRCE-DDS-Agent.git \
+        /home/user/px4_ros_uxrce_dds_ws/src/Micro-XRCE-DDS-Agent
+
+
+# ----------- RUN COMMAND -----------
+# docker run -it --rm \
+#    -e DISPLAY=$DISPLAY \
+#    -e WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
+#    -e QT_NO_MITSHM=1 \
+#    -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
+#    -e NVIDIA_DRIVER_CAPABILITIES=all \
+#    -v /run/user/1000:/run/user/1000 \
+#    -v /tmp/.X11-unix:/tmp/.X11-unix \
+#    -v /usr/share/vulkan/icd.d/nvidia_icd.json:/etc/vulkan/icd.d/nvidia_icd.json \
+#    -v /usr/share/vulkan/implicit_layer.d/nvidia_layers.json:/etc/vulkan/implicit_layer.d/nvidia_layers.json \
+#    -v /usr/share/glvnd/egl_vendor.d/10_nvidia.json:/usr/share/glvnd/egl_vendor.d/10_nvidia.json \
+#    --device=/dev/dri:/dev/dri \
+#    --net host \
+#    --ipc host \
+#    --gpus all \
+#    --user user \
+#    --privileged \
+#    --name Ignition \
+#    kestr3l/px4:1.14.0-beta2-0.0.1 zsh
+
+# ---------- BUILD COMMAND ----------
+# DOCKER_BUILDKIT=1 docker build --no-cache \
+# --build-arg BASEIMAGE=nvidia/cuda \
+# --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu20.04 \
+# -t kestr3l/px4:1.14.0-beta2-0.0.1 \
+# -f ./PX4-Autopilot-Beta/Dockerfile .
