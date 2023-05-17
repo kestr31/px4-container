@@ -1,6 +1,13 @@
 ARG BASEIMAGE
 ARG BASETAG
 
+#          __                                     __ 
+#    _____/ /_____ _____ ____        ____ _____  / /_
+#   / ___/ __/ __ `/ __ `/ _ \______/ __ `/ __ \/ __/
+#  (__  ) /_/ /_/ / /_/ /  __/_____/ /_/ / /_/ / /_  
+# /____/\__/\__,_/\__, /\___/      \__,_/ .___/\__/  
+#                /____/                /_/           
+
 # BASE STAGE FOR CACHINE APT PACKAGE LISTS
 FROM ${BASEIMAGE}:${BASETAG} as stage_apt
 
@@ -37,7 +44,15 @@ RUN \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null \
     && apt-get update
 
-FROM ${BASEIMAGE}:${BASETAG} as stage_deps
+
+#          __                         __          _ __    __         
+#    _____/ /_____ _____ ____        / /_  __  __(_) /___/ /__  _____
+#   / ___/ __/ __ `/ __ `/ _ \______/ __ \/ / / / / / __  / _ \/ ___/
+#  (__  ) /_/ /_/ / /_/ /  __/_____/ /_/ / /_/ / / / /_/ /  __/ /    
+# /____/\__/\__,_/\__, /\___/     /_.___/\__,_/_/_/\__,_/\___/_/     
+#                /____/                                              
+
+FROM ${BASEIMAGE}:${BASETAG} as stage_builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -48,6 +63,139 @@ ENV \
 
 RUN \
     sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
+
+# BUILD DEPENDENCIES OF XRCE-DDS-AGENT
+RUN \
+    --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
+    --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
+    apt-get install -y --no-install-recommends \
+        sudo \
+        ca-certificates \
+        cmake \
+        g++ \
+        gcc \
+        git \
+        make
+
+# DEPENDENCIES REQUIRED TO BUILD MAVLINK-ROUTER
+RUN \
+    --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
+    --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
+    apt-get install -y --no-install-recommends \
+        g++ \
+        gcc \
+        git \
+        meson \
+        ninja-build \
+        pkg-config \
+        systemd
+
+RUN \
+    groupadd user \
+    && useradd -ms /bin/zsh user -g user \
+    && echo "user ALL=NOPASSWD: ALL" >> /etc/sudoers
+
+# CHANGE USER TO NEWLY GENERATED user AND CHANGE WORKING DIRECTORY TO user's HOME
+USER user
+WORKDIR /home/user
+
+
+#          __                          __    __                                  __ 
+#    _____/ /_____ _____ ____     ____/ /___/ /____      ____ _____ ____  ____  / /_
+#   / ___/ __/ __ `/ __ `/ _ \   / __  / __  / ___/_____/ __ `/ __ `/ _ \/ __ \/ __/
+#  (__  ) /_/ /_/ / /_/ /  __/  / /_/ / /_/ (__  )_____/ /_/ / /_/ /  __/ / / / /_  
+# /____/\__/\__,_/\__, /\___/   \__,_/\__,_/____/      \__,_/\__, /\___/_/ /_/\__/  
+#                /____/                                     /____/                  
+
+FROM stage_builder as stage_dds_agent
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN \
+    git clone https://github.com/eProsima/Micro-XRCE-DDS-Agent.git \
+    &&  mkdir Micro-XRCE-DDS-Agent/build
+
+RUN \
+    cmake -B /home/user/Micro-XRCE-DDS-Agent/build -S /home/user/Micro-XRCE-DDS-Agent \
+    && make -C /home/user/Micro-XRCE-DDS-Agent/build
+
+# BUILD RESULTS:
+## lib
+### /usr/local/lib/libmicroxrcedds_agent.so.2.4.0
+### /usr/local/lib/libmicroxrcedds_agent.so.2.4
+### /usr/local/lib/libmicroxrcedds_agent.so
+## bin
+### /usr/local/include/uxr
+### usr/local/share/microxrcedds_agent
+### /usr/local/bin/MicroXRCEAgent
+### /usr/local/include/uxr/agent/config.hpp
+
+### 
+### /usr/local/lib/cmake
+### /usr/local/lib/cmake/fastcdr
+
+#          __                                                   
+#    _____/ /_____ _____ ____        ____ ___  ____ __   _______
+#   / ___/ __/ __ `/ __ `/ _ \______/ __ `__ \/ __ `/ | / / ___/
+#  (__  ) /_/ /_/ / /_/ /  __/_____/ / / / / / /_/ /| |/ / /    
+# /____/\__/\__,_/\__, /\___/     /_/ /_/ /_/\__,_/ |___/_/     
+#                /____/                                         
+
+FROM stage_builder as stage_mavlink_router
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ENV \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
+
+# BUILD MAVLKINK-ROUTER. BUID BINARY LOCATES IN mavlink-router/build/src/mavlink-routerd
+RUN \
+    git clone https://github.com/mavlink-router/mavlink-router -b v3 \
+    && git -C mavlink-router submodule update --init --recursive
+
+RUN \
+    meson setup mavlink-router/build mavlink-router \
+    && ninja -C mavlink-router/build \
+    && sudo ninja -C mavlink-router/build install
+
+# usr/bin
+# /lib/systemd/system
+
+
+#          __                         _____             __
+#    _____/ /_____ _____ ____        / __(_)___  ____ _/ /
+#   / ___/ __/ __ `/ __ `/ _ \______/ /_/ / __ \/ __ `/ / 
+#  (__  ) /_/ /_/ / /_/ /  __/_____/ __/ / / / / /_/ / /  
+# /____/\__/\__,_/\__, /\___/     /_/ /_/_/ /_/\__,_/_/   
+#                /____/                                   
+
+FROM ${BASEIMAGE}:${BASETAG} as stage_final
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ENV \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
+
+RUN \
+    sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
+
+# ADD NON-ROOT USER user AND GRANT SUDO PERMISSION
+RUN \
+    groupadd user \
+    && useradd -ms /bin/zsh user -g user
+
+COPY --from=stage_dds_agent \
+    /home/user/Micro-XRCE-DDS-Agent /home/user/Micro-XRCE-DDS-Agent
+
+COPY --from=stage_mavlink_router \
+    /home/user/mavlink-router/build/src/mavlink-routerd /usr/bin/mavlink-routerd
+
 
 # DOWNLOAD 
 COPY PX4-Autopilot-Beta/aptdeps.txt /tmp/aptdeps.txt
@@ -72,7 +220,7 @@ RUN \
     --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
     --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
-	apt-get install --no-install-recommends --fix-missing -y $(cat /tmp/aptdeps.txt) \
+	apt-get install --no-install-recommends -y $(cat /tmp/aptdeps.txt) \
     && rm -rf /tmp/*
 
 # SET LOCALE TO en_UT.UTF-8
@@ -85,12 +233,9 @@ RUN \
     && locale-gen en_US en_US.UTF-8 \
     && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 
-
 # ADD NON-ROOT USER user AND GRANT SUDO PERMISSION
 RUN \
-    groupadd user \
-    && useradd -ms /bin/zsh user -g user \
-    && echo "user ALL=NOPASSWD: ALL" >> /etc/sudoers
+    echo "user ALL=NOPASSWD: ALL" >> /etc/sudoers
 
 # CHANGE USER TO NEWLY GENERATED user AND CHANGE WORKING DIRECTORY TO user's HOME
 USER user
@@ -108,10 +253,6 @@ RUN \
     && echo "alias cat='batcat --paging=never'" >> ${HOME}/.zshrc
 
 
-FROM stage_deps as stage_app
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
 RUN \
     git clone https://github.com/PX4/PX4-Autopilot.git -b v1.14.0-beta2 \
     && git -C PX4-Autopilot submodule update --init --recursive
@@ -126,43 +267,19 @@ RUN \
     echo "source /opt/ros/humble/setup.zsh" >> ${HOME}/.zshrc
 
 RUN \
-    sudo usermod -aG dialout user
-RUN \
-    --mount=type=cache,target=/var/cache/apt,from=stage_apt,source=/var/cache/apt \
-    --mount=type=cache,target=/var/lib/apt,from=stage_apt,source=/var/lib/apt \
-    --mount=type=cache,target=/etc/apt/sources.list.d,from=stage_apt,source=/etc/apt/sources.list.d \
-    sudo apt install -y --no-install-recommends \
-        fuse \
-        gstreamer1.0-gl \
-        gstreamer1.0-libav \
-        gstreamer1.0-plugins-bad \
-        libfuse2 \
-        libpulse-mainloop-glib0 \
-        libqt5gui5
-RUN \
-    wget -P /home/user/QgroundControl https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage \
-    && chmod +x /home/user/QgroundControl/QGroundControl.AppImage
-COPY PX4-Autopilot-Beta/config /home/user/.config/QGroundControl.org
-
-
-RUN \
-    git clone https://github.com/eProsima/Micro-XRCE-DDS-Client.git \
-    &&  mkdir Micro-XRCE-DDS-Client/build
-WORKDIR /home/user/Micro-XRCE-DDS-Client/build
-RUN \
-    cmake .. \
-    && make
-WORKDIR /home/user
-
-
-RUN \
     mkdir -p /home/user/px4_ros_uxrce_dds_ws/src \
     && git clone https://github.com/eProsima/Micro-XRCE-DDS-Agent.git \
         /home/user/px4_ros_uxrce_dds_ws/src/Micro-XRCE-DDS-Agent
 
+RUN \
+    sudo make -C /home/user/Micro-XRCE-DDS-Agent/build install \
+    && sudo ldconfig /usr/local/lib/ \
+    && sudo rm -rf Micro-XRCE-DDS-Agent
 
 COPY PX4-Autopilot-Beta/scripts /home/user/scripts
 
+COPY PX4-Autopilot-Beta/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+CMD [ "/usr/local/bin/entrypoint.sh" ]
 
 # ------ RUN COMMAND (DEFAULT) -----
 # docker run -it --rm \
