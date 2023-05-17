@@ -12,6 +12,7 @@ services:
       QT_NO_MITSHM:               ${QT_NO_MITSHM}
       LIBGL_ALWAYS_SOFTWARE:      ${LIBGL_ALWAYS_SOFTWARE}
       NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES}
+      QGC_IP:                     ${CONTAINER_QGC_ADDR}
       # -------------------------------------------------
 
     volumes:
