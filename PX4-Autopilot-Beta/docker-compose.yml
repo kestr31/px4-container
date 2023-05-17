@@ -1,0 +1,114 @@
+version: "3"
+services:
+  aio:
+    depends_on:
+      - qgc
+    privileged: true
+    environment:
+      # -----------STATIC VALUE DO NOT MODIFY------------
+      DISPLAY:                    ${DISPLAY}
+      WAYLAND_DISPLAY:            ${WAYLAND_DISPLAY}
+      XDG_RUNTIME_DIR:            ${XDG_RUNTIME_DIR}
+      QT_NO_MITSHM:               ${QT_NO_MITSHM}
+      LIBGL_ALWAYS_SOFTWARE:      ${LIBGL_ALWAYS_SOFTWARE}
+      NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES}
+      # -------------------------------------------------
+
+    volumes:
+      # -----------STATIC VALUE DO NOT MODIFY------------
+      - ${XDG_RUNTIME_DIR}:${XDG_RUNTIME_DIR}
+      - ${X11_SOCKET_DIR}:${X11_SOCKET_DIR}
+      # -------------------------------------------------
+
+      # ---------SET TO USE VULKAN WITHN VIDIA GPU-------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      - /usr/share/vulkan/icd.d/nvidia_icd.json:/etc/vulkan/icd.d/nvidia_icd.json
+      - /usr/share/vulkan/implicit_layer.d/nvidia_layers.json:/etc/vulkan/implicit_layer.d/nvidia_layers.json
+      - /usr/share/glvnd/egl_vendor.d/10_nvidia.json:/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿
+
+      # --------SET FOR DEVELOPMENT OR DEBUGGING---------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      # NOTHING IS HERE NOW
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
+
+    devices:
+      # -----------STATIC VALUE DO NOT MODIFY------------
+      - /dev/dri/card0
+      # -------------------------------------------------
+
+    ipc: ${IPC_MODE}
+    networks:
+      sitl-net:
+        ipv4_address: ${CONTAINER_PX4_ADDR}
+    command: sleep infinity
+    container_name:   ${CONTAINER_PX4_NAME}
+    hostname:         ${CONTAINER_PX4_HOSTNAME}
+    image:            ${CONTAINER_PX4_IMAGE}
+    # -------------SET TO ASSIGN NVIDIA GPU------------
+    # ---COMMENT OUT IF YOU DO NOT HAVE A NVIDIA GPU---
+    # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿
+
+
+  qgc:
+    privileged: true
+    environment:
+      # -----------STATIC VALUE DO NOT MODIFY------------
+      DISPLAY:                    ${DISPLAY}
+      WAYLAND_DISPLAY:            ${WAYLAND_DISPLAY}
+      XDG_RUNTIME_DIR:            ${XDG_RUNTIME_DIR}
+      QT_NO_MITSHM:               ${QT_NO_MITSHM}
+      NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES}
+      # -------------------------------------------------
+    volumes:
+      # -----------STATIC VALUE DO NOT MODIFY------------
+      - ${XDG_RUNTIME_DIR}:${XDG_RUNTIME_DIR}
+      - ${X11_SOCKET_DIR}:${X11_SOCKET_DIR}
+      # -------------------------------------------------
+
+    devices:
+      # -----------STATIC VALUE DO NOT MODIFY------------
+      - /dev/dri/card0
+      # -------------------------------------------------
+
+    ipc: ${IPC_MODE}
+    networks:
+      sitl-net:
+        ipv4_address: ${CONTAINER_QGC_ADDR}
+    # entrypoint: sleep infinity
+    container_name:   ${CONTAINER_QGC_NAME}
+    hostname:         ${CONTAINER_QGC_HOSTNAME}
+    image:            ${CONTAINER_QGC_IMAGE}
+    # -------------SET TO ASSIGN NVIDIA GPU------------
+    # ---COMMENT OUT IF YOU DO NOT HAVE A NVIDIA GPU---
+    # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿
+
+
+networks:
+  sitl-net:
+    name: ${CONTAINER_NET_NAME}
+    driver: bridge
+    ipam:
+      driver: default
+      config: 
+        - subnet:   ${CONTAINER_NET_SUBNET}
+          gateway:  ${CONTAINER_NET_GATEWAY}
+
+# DOCKER-COMPOSE UP COMMAND
+# docker-compose --env-file run.env up
