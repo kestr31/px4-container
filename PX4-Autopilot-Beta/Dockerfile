@@ -161,7 +161,10 @@ RUN \
         /home/user/px4_ros_uxrce_dds_ws/src/Micro-XRCE-DDS-Agent
 
 
-# ----------- RUN COMMAND -----------
+COPY PX4-Autopilot-Beta/scripts /home/user/scripts
+
+
+# ------ RUN COMMAND (DEFAULT) -----
 # docker run -it --rm \
 #    -e DISPLAY=$DISPLAY \
 #    -e WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
@@ -182,9 +185,42 @@ RUN \
 #    --name Ignition \
 #    kestr3l/px4:1.14.0-beta2-0.0.1 zsh
 
-# ---------- BUILD COMMAND ----------
+# ------- RUN COMMAND (WSL2) -------
+# docker run -it --rm \
+#    -e DISPLAY=$DISPLAY \
+#    -e WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
+#    -e QT_NO_MITSHM=1 \
+#    -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
+#    -e NVIDIA_DRIVER_CAPABILITIES=all \
+#    -e PULSE_SERVER=/mnt/wslg/PulseServer \
+#    -e LD_LIBRARY_PATH=/usr/lib/wsl/lib \
+#    -v /run/user/1000:/run/user/1000 \
+#    -v /tmp/.X11-unix:/tmp/.X11-unix \
+#    -v /usr/share/vulkan/icd.d/nvidia_icd.json:/etc/vulkan/icd.d/nvidia_icd.json \
+#    -v /usr/share/vulkan/implicit_layer.d/nvidia_layers.json:/etc/vulkan/implicit_layer.d/nvidia_layers.json \
+#    -v /usr/share/glvnd/egl_vendor.d/10_nvidia.json:/usr/share/glvnd/egl_vendor.d/10_nvidia.json \
+#    -v /mnt/wslg:/mnt/wslg \
+#    -v /usr/lib/wsl:/usr/lib/wsl \
+#    --device=/dev/dxg \
+#    --device=/dev/dri/card0 \
+#    --net host \
+#    --ipc host \
+#    --gpus all \
+#    --user user \
+#    --privileged \
+#    --name Ignition \
+#    kestr3l/px4:1.14.0-beta2-0.0.1-plain zsh
+
+# ------- BUILD COMMAND (CUDA) -------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu20.04 \
-# -t kestr3l/px4:1.14.0-beta2-0.0.1 \
+# -t kestr3l/px4:1.14.0-beta2-0.0.1-cuda \
+# -f ./PX4-Autopilot-Beta/Dockerfile .
+
+# ------- BUILD COMMAND (PLAIN) ------
+# DOCKER_BUILDKIT=1 docker build --no-cache \
+# --build-arg BASEIMAGE=ubuntu \
+# --build-arg BASETAG=22.04 \
+# -t kestr3l/px4:1.14.0-beta2-0.0.1-plain \
 # -f ./PX4-Autopilot-Beta/Dockerfile .
