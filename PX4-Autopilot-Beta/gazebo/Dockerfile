@@ -132,8 +132,10 @@ RUN \
     && sudo rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
 
 RUN \
-    git clone https://github.com/gazebosim/gz-transport.git
-
+    git clone https://github.com/gazebosim/gz-transport.git \
+    && mkdir /home/user/gz-transport/example/build \
+    && cmake -B /home/user/gz-transport/example/build -S /home/user/gz-transport/example \
+    && make -C /home/user/gz-transport/example/build -j4
 
 # COPY PX4-Autopilot-Beta/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 # CMD [ "/usr/local/bin/entrypoint.sh" ]
