@@ -1,6 +1,6 @@
 version: "3"
 services:
-  aio:
+  px4:
     depends_on:
       - qgc
     privileged: true
@@ -13,7 +13,9 @@ services:
       LIBGL_ALWAYS_SOFTWARE:      ${LIBGL_ALWAYS_SOFTWARE}
       NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES}
       LD_LIBRARY_PATH:            ${LD_LIBRARY_PATH}
+      PX4_SIM_HOST_ADDR:          ${CONTAINER_SIM_ADDR}
       QGC_IP:                     ${CONTAINER_QGC_ADDR}
+      GZ_PARTITION:               ${GZ_PARTITION}
       # -------------------------------------------------
 
     volumes:
@@ -46,7 +48,6 @@ services:
     networks:
       sitl-net:
         ipv4_address: ${CONTAINER_PX4_ADDR}
-    command: sleep infinity
     container_name:   ${CONTAINER_PX4_NAME}
     hostname:         ${CONTAINER_PX4_HOSTNAME}
     image:            ${CONTAINER_PX4_IMAGE}
@@ -62,6 +63,67 @@ services:
               capabilities: [gpu]
     # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿
 
+  sim:
+    depends_on:
+      - px4
+    privileged: true
+    environment:
+      # -----------STATIC VALUE DO NOT MODIFY------------
+      DISPLAY:                    ${DISPLAY}
+      WAYLAND_DISPLAY:            ${WAYLAND_DISPLAY}
+      XDG_RUNTIME_DIR:            ${XDG_RUNTIME_DIR}
+      QT_NO_MITSHM:               ${QT_NO_MITSHM}
+      LIBGL_ALWAYS_SOFTWARE:      ${LIBGL_ALWAYS_SOFTWARE}
+      NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES}
+      LD_LIBRARY_PATH:            ${LD_LIBRARY_PATH}
+      GZ_PARTITION:               ${GZ_PARTITION}
+      # -------------------------------------------------
+
+    volumes:
+      # -----------STATIC VALUE DO NOT MODIFY------------
+      - ${XDG_RUNTIME_DIR}:${XDG_RUNTIME_DIR}
+      - ${X11_SOCKET_DIR}:${X11_SOCKET_DIR}
+      - /mnt/wslg:/mnt/wslg
+      - /usr/lib/wsl:/usr/lib/wsl
+      # -------------------------------------------------
+
+      # ---------SET TO USE VULKAN WITHN VIDIA GPU-------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      - /usr/share/vulkan/icd.d/nvidia_icd.json:/etc/vulkan/icd.d/nvidia_icd.json
+      - /usr/share/vulkan/implicit_layer.d/nvidia_layers.json:/etc/vulkan/implicit_layer.d/nvidia_layers.json
+      - /usr/share/glvnd/egl_vendor.d/10_nvidia.json:/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿
+
+      # --------SET FOR DEVELOPMENT OR DEBUGGING---------
+      # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+      # NOTHING IS HERE NOW
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
+
+    devices:
+      # -----------STATIC VALUE DO NOT MODIFY------------
+      - /dev/dri/card0
+      - /dev/dxg
+      # -------------------------------------------------
+
+    ipc: ${IPC_MODE}
+    networks:
+      sitl-net:
+        ipv4_address: ${CONTAINER_SIM_ADDR}
+    command: sleep infinity
+    container_name:   ${CONTAINER_SIM_NAME}
+    hostname:         ${CONTAINER_SIM_HOSTNAME}
+    image:            ${CONTAINER_SIM_IMAGE}
+    # -------------SET TO ASSIGN NVIDIA GPU------------
+    # ---COMMENT OUT IF YOU DO NOT HAVE A NVIDIA GPU---
+    # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿
 
   qgc:
     privileged: true
@@ -93,7 +155,6 @@ services:
     networks:
       sitl-net:
         ipv4_address: ${CONTAINER_QGC_ADDR}
-    # entrypoint: sleep infinity
     container_name:   ${CONTAINER_QGC_NAME}
     hostname:         ${CONTAINER_QGC_HOSTNAME}
     image:            ${CONTAINER_QGC_IMAGE}
