@@ -1,7 +1,9 @@
 bat
 curl
 git
-gz-garden
+libgz-math7-dev
+libgz-msgs9-dev
+libgz-transport12-dev
 lsb-release
 mesa-utils
 mesa-vulkan-drivers
