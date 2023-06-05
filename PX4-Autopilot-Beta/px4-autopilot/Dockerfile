@@ -343,11 +343,11 @@ CMD [ "/usr/local/bin/entrypoint.sh" ]
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu20.04 \
 # -t kestr3l/px4:1.14.0-beta2-0.0.1-cuda \
-# -f ./PX4-Autopilot-Beta/Dockerfile .
+# -f ./PX4-Autopilot-Beta/px4-autopilot/Dockerfile .
 
 # ------- BUILD COMMAND (PLAIN) ------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=ubuntu \
 # --build-arg BASETAG=22.04 \
 # -t kestr3l/px4:1.14.0-beta2-0.0.1-plain \
-# -f ./PX4-Autopilot-Beta/Dockerfile .
+# -f ./PX4-Autopilot-Beta/px4-autopilot/Dockerfile .
