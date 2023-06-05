@@ -1,0 +1,5 @@
+#! /bin/bash
+
+export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:$PX4_GZ_MODELS:$PX4_GZ_WORLDS
+
+sleep infinity

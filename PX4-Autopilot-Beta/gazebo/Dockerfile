@@ -66,7 +66,7 @@ RUN \
     && useradd -ms /bin/zsh user -g user
 
 # DOWNLOAD 
-COPY aptdeps.txt /tmp/aptdeps.txt
+COPY PX4-Autopilot-Beta/gazebo/aptdeps.txt /tmp/aptdeps.txt
 
 # UPGRADE THE BASIC ENVIRONMENT FIRST
 RUN \
@@ -120,25 +120,28 @@ RUN \
     && sed -i "s/(git)/(git zsh-autosuggestions zsh-syntax-highlighting)/g" ${HOME}/.zshrc \
     && echo "alias cat='batcat --paging=never'" >> ${HOME}/.zshrc
 
-
+# DEV OPTION
 RUN \
     git clone https://github.com/PX4/PX4-Autopilot.git -b v1.14.0-beta2 \
-    && git -C PX4-Autopilot submodule update --init --recursive
+    && git -C PX4-Autopilot submodule update --init --recursive \
+    && mkdir /home/user/gazebo
 
+# DEV OPTION
 RUN \
     PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools \
     && sudo apt-get autoremove -y \
     && sudo apt-get clean autoclean \
     && sudo rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
 
-RUN \
-    git clone https://github.com/gazebosim/gz-transport.git \
-    && mkdir /home/user/gz-transport/example/build \
-    && cmake -B /home/user/gz-transport/example/build -S /home/user/gz-transport/example \
-    && make -C /home/user/gz-transport/example/build -j4
+# DEV OPTION
+# RUN \
+#     git clone https://github.com/gazebosim/gz-transport.git \
+#     && mkdir /home/user/gz-transport/example/build \
+#     && cmake -B /home/user/gz-transport/example/build -S /home/user/gz-transport/example \
+#     && make -C /home/user/gz-transport/example/build -j4
 
-# COPY PX4-Autopilot-Beta/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-# CMD [ "/usr/local/bin/entrypoint.sh" ]
+COPY PX4-Autopilot-Beta/gazebo/entrypoint.sh /usr/local/bin/entrypoint.sh
+CMD [ "/usr/local/bin/entrypoint.sh" ]
 
 # ------ RUN COMMAND (DEFAULT) -----
 # docker run -it --rm \
@@ -192,11 +195,11 @@ RUN \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu20.04 \
 # -t kestr3l/gazebo:garden-cuda-0.0.1 \
-# -f ./Dockerfile .
+# -f ./PX4-Autopilot-Beta/gazebo/Dockerfile .
 
 # ------- BUILD COMMAND (PLAIN) ------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=ubuntu \
 # --build-arg BASETAG=22.04 \
 # -t kestr3l/gazebo:garden-0.0.1 \
-# -f ./Dockerfile .
+# -f ./PX4-Autopilot-Beta/gazebo/Dockerfile .
