@@ -198,7 +198,7 @@ COPY --from=stage_mavlink_router \
 
 
 # DOWNLOAD 
-COPY PX4-Autopilot-Beta/aptdeps.txt /tmp/aptdeps.txt
+COPY PX4-Autopilot-Beta/px4-autopilot/aptdeps.txt /tmp/aptdeps.txt
 
 # UPGRADE THE BASIC ENVIRONMENT FIRST
 RUN \
@@ -288,7 +288,7 @@ COPY PX4-Autopilot-Beta/scripts /home/user/scripts
 #     -o ~/px4_ros/src/px4_ros_com/templates/urtps_bridge_topics.yaml
 
 
-COPY PX4-Autopilot-Beta/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY PX4-Autopilot-Beta/px4-autopilot/entrypoint.sh /usr/local/bin/entrypoint.sh
 CMD [ "/usr/local/bin/entrypoint.sh" ]
 
 # ------ RUN COMMAND (DEFAULT) -----
