@@ -278,6 +278,16 @@ RUN \
 
 COPY PX4-Autopilot-Beta/scripts /home/user/scripts
 
+# git clone https://github.com/PX4/px4_ros_com.git ~/px4_ros/src/px4_ros_com
+# git -C ~/px4_ros/src/px4_ros_com reset --hard 0bcf68bcb635199adcd134e8932932054e863c0d
+# git clone https://github.com/PX4/px4_msgs.git ~/px4_ros/src/px4_msgs
+# git -C ~/px4_ros/src/px4_msgs reset --hard ffc3a4cd578776213a444abe17d7eabf9621b266
+# rm -rf ~/px4_ros/src/px4_msgs/msg/*.msg ~/px4_ros/src/px4_ros_com/src/examples ~/px4_ros/src/px4_ros_com/launch
+# python3 /home/user/PX4-Autopilot/Tools/msg/px_generate_uorb_topic_files.py \
+#     -i ~/PX4-Autopilot/msg/tools/urtps_bridge_topics.yaml \
+#     -o ~/px4_ros/src/px4_ros_com/templates/urtps_bridge_topics.yaml
+
+
 COPY PX4-Autopilot-Beta/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 CMD [ "/usr/local/bin/entrypoint.sh" ]
 
