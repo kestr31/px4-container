@@ -13,9 +13,10 @@ services:
       LIBGL_ALWAYS_SOFTWARE:      ${LIBGL_ALWAYS_SOFTWARE}
       NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES}
       LD_LIBRARY_PATH:            ${LD_LIBRARY_PATH}
-      PX4_SIM_HOST_ADDR:          ${CONTAINER_SIM_ADDR}
       QGC_IP:                     ${CONTAINER_QGC_ADDR}
       GZ_PARTITION:               ${GZ_PARTITION}
+      GZ_RELAY:                   ${GZ_RELAY}
+      GZ_IP:                      ${GZ_IP}
       # -------------------------------------------------
 
     volumes:
@@ -181,5 +182,5 @@ networks:
         - subnet:   ${CONTAINER_NET_SUBNET}
           gateway:  ${CONTAINER_NET_GATEWAY}
 
-# DOCKER-COMPOSE UP COMMAND
-# docker-compose -f docker-compose.wslg.yml --env-file wslg.env up
+# DOCKER COMPOSE UP COMMAND
+# docker compose -f docker-compose.wslg.yml --env-file run.env up
