@@ -141,6 +141,11 @@ RUN \
 #     && make -C /home/user/gz-transport/example/build -j4
 
 COPY PX4-Autopilot-Beta/gazebo/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN \
+    mkdir /home/user/scripts && \
+    sudo ln -s /usr/local/bin/entrypoint.sh /home/user/scripts/entrypoint.sh
+
 CMD [ "/usr/local/bin/entrypoint.sh" ]
 
 # ------ RUN COMMAND (DEFAULT) -----
@@ -161,8 +166,8 @@ CMD [ "/usr/local/bin/entrypoint.sh" ]
 #    --gpus all \
 #    --user user \
 #    --privileged \
-#    --name Ignition \
-#    kestr3l/px4:1.14.0-beta2-0.0.1 zsh
+#    --name sitl-sim \
+#    kestr3l/gazebo:garden-0.0.1-dev zsh
 
 # ------- RUN COMMAND (WSL2) -------
 # docker run -it --rm \
@@ -187,19 +192,19 @@ CMD [ "/usr/local/bin/entrypoint.sh" ]
 #    --gpus all \
 #    --user user \
 #    --privileged \
-#    --name Ignition \
-#    kestr3l/px4:1.14.0-beta2-0.0.1-plain zsh
+#    --name sitl-sim \
+#    kestr3l/gazebo:garden-0.0.1-dev zsh
 
 # ------- BUILD COMMAND (CUDA) -------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu20.04 \
-# -t kestr3l/gazebo:garden-cuda-0.0.1 \
+# -t kestr3l/gazebo:garden-0.0.1-cuda-dev \
 # -f ./PX4-Autopilot-Beta/gazebo/Dockerfile .
 
 # ------- BUILD COMMAND (PLAIN) ------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=ubuntu \
 # --build-arg BASETAG=22.04 \
-# -t kestr3l/gazebo:garden-0.0.1 \
+# -t kestr3l/gazebo:garden-0.0.1-dev \
 # -f ./PX4-Autopilot-Beta/gazebo/Dockerfile .
