@@ -1,8 +1,9 @@
 version: "3"
 services:
-  px4:
+  px4-001:
     depends_on:
       - qgc
+      - sim
     privileged: true
     environment:
       # -----------STATIC VALUE DO NOT MODIFY------------
@@ -15,6 +16,11 @@ services:
       GZ_PARTITION:               ${GZ_PARTITION}
       GZ_RELAY:                   ${GZ_RELAY}
       GZ_IP:                      ${GZ_IP}
+      SITL_TYPE:                  ${SITL_TYPE}
+      SITL_AIRFRAME_ID:           ${SITL_AIRFRAME_ID}
+      SITL_AIRFRAME:              ${SITL_AIRFRAME}
+      SITL_POSE:                  ${SITL_POSE}
+      DEBUG_MODE:                 ${DEBUG_MODE}
       # -------------------------------------------------
 
     volumes:
@@ -60,8 +66,6 @@ services:
     # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿
 
   sim:
-    depends_on:
-      - px4
     privileged: true
     environment:
       # -----------STATIC VALUE DO NOT MODIFY------------
@@ -71,6 +75,10 @@ services:
       QT_NO_MITSHM:               ${QT_NO_MITSHM}
       NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES}
       GZ_PARTITION:               ${GZ_PARTITION}
+      PX4_GZ_MODELS:              ${PX4_GZ_MODELS}
+      PX4_GZ_WORLDS:              ${PX4_GZ_WORLDS}
+      GZ_SIM_RESOURCE_PATH:       ${GZ_SIM_RESOURCE_PATH}
+      DEBUG_MODE:                 ${DEBUG_MODE}
       # -------------------------------------------------
 
     volumes:
@@ -100,7 +108,6 @@ services:
     networks:
       sitl-net:
         ipv4_address: ${CONTAINER_SIM_ADDR}
-    command: sleep infinity
     container_name:   ${CONTAINER_SIM_NAME}
     hostname:         ${CONTAINER_SIM_HOSTNAME}
     image:            ${CONTAINER_SIM_IMAGE}
