@@ -264,6 +264,9 @@ RUN \
     && sudo rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
 
 RUN \
+    make -C /home/user/PX4-Autopilot px4_sitl
+
+RUN \
     echo "source /opt/ros/humble/setup.zsh" >> ${HOME}/.zshrc
 
 RUN \
@@ -289,6 +292,10 @@ COPY PX4-Autopilot-Beta/scripts /home/user/scripts
 
 
 COPY PX4-Autopilot-Beta/px4-autopilot/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN \
+    sudo ln -s /usr/local/bin/entrypoint.sh /home/user/scripts/entrypoint.sh
+
 CMD [ "/usr/local/bin/entrypoint.sh" ]
 
 # ------ RUN COMMAND (DEFAULT) -----
@@ -309,8 +316,8 @@ CMD [ "/usr/local/bin/entrypoint.sh" ]
 #    --gpus all \
 #    --user user \
 #    --privileged \
-#    --name Ignition \
-#    kestr3l/px4:1.14.0-beta2-0.0.1 zsh
+#    --name sitl-px4 \
+#    kestr3l/px4:1.14.0-beta2-0.0.1-dev zsh
 
 # ------- RUN COMMAND (WSL2) -------
 # docker run -it --rm \
@@ -335,19 +342,19 @@ CMD [ "/usr/local/bin/entrypoint.sh" ]
 #    --gpus all \
 #    --user user \
 #    --privileged \
-#    --name Ignition \
-#    kestr3l/px4:1.14.0-beta2-0.0.1-plain zsh
+#    --name sitl-px4 \
+#    kestr3l/px4:1.14.0-beta2-0.0.1-dev zsh
 
 # ------- BUILD COMMAND (CUDA) -------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=nvidia/cuda \
 # --build-arg BASETAG=11.7.1-cudnn8-devel-ubuntu20.04 \
-# -t kestr3l/px4:1.14.0-beta2-0.0.1-cuda \
+# -t kestr3l/px4:1.14.0-beta2-0.0.1-cuda-dev \
 # -f ./PX4-Autopilot-Beta/px4-autopilot/Dockerfile .
 
 # ------- BUILD COMMAND (PLAIN) ------
 # DOCKER_BUILDKIT=1 docker build --no-cache \
 # --build-arg BASEIMAGE=ubuntu \
 # --build-arg BASETAG=22.04 \
-# -t kestr3l/px4:1.14.0-beta2-0.0.1-plain \
+# -t kestr3l/px4:1.14.0-beta2-0.0.1-dev \
 # -f ./PX4-Autopilot-Beta/px4-autopilot/Dockerfile .
