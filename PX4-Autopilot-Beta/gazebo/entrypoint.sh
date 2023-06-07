@@ -27,6 +27,44 @@ if [ "${DEBUG_MODE}" -eq "1" ]; then
 
     debug_message
 
+    ## A-1. EXPORT ENVIRONMENT VARIABLE?
+    ### CASE A-1-1: YES EXPORT THEM
+    if [ "${EXPORT_ENV}" -eq "1" ]; then
+
+        #- GET LINE NUMBER TO START ADDING export STATEMENT
+        COMMENT_BASH_START=$(grep -c "" /home/user/.bashrc)
+        COMMENT_ZSH_START=$(grep -c "" /home/user/.zshrc)
+
+        COMMENT_BASH_START=$(($COMMENT_BASH_START + 1))
+        COMMENT_ZSH_START=$(($COMMENT_ZSH_START + 1))
+
+
+        #- WTIE VARIABLED TO BE EXPORTED TO THE TEMPFILE
+        echo "DEBUG_MODE=0" >> /tmp/envvar
+        echo "GZ_SIM_RESOURCE_PATH=${GZ_SIM_RESOURCE_PATH}" >> /tmp/envvar
+
+        #- ADD VARIABLES TO BE EXPORTED TO SHELL RC
+        for value in $(cat /tmp/envvar)
+        do
+            echo ${value} >> /home/user/.bashrc
+            echo ${value} >> /home/user/.zshrc
+        done
+
+        #- ADD export STATEMENT TO VARIABLES
+        sed -i "${COMMENT_BASH_START},\$s/\(.*\)/export \1/g" \
+            ${HOME}/.bashrc
+        sed -i "${COMMENT_ZSH_START},\$s/\(.*\)/export \1/g" \
+            ${HOME}/.zshrc
+
+        #- REMOVE TEMPORARY FILE
+        rm -f /tmp/envvar
+
+    ### CASE A-1-2: NO LEAVE THEM CLEAN
+    else
+        echo "INFO [SITL] ENVIRONMENT VARS WILL NOT BE SET"
+    fi
+
+
 ## CASE A-2: SIMULATION MODE
 else
 
