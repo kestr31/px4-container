@@ -23,6 +23,7 @@ services:
       SITL_AIRFRAME:              ${SITL_AIRFRAME}
       SITL_POSE:                  ${SITL_POSE}
       DEBUG_MODE:                 ${DEBUG_MODE}
+      EXPORT_ENV:                 ${EXPORT_ENV}
       # -------------------------------------------------
 
     volumes:
@@ -42,7 +43,7 @@ services:
 
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
-      # NOTHING IS HERE NOW
+      # - ./px4-autopilot/entrypoint.sh:/usr/local/bin/entrypoint.sh
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
 
     devices:
@@ -86,6 +87,7 @@ services:
       PX4_GZ_WORLDS:              ${PX4_GZ_WORLDS}
       GZ_SIM_USER_RESOURCE_PATH:  ${GZ_SIM_USER_RESOURCE_PATH}
       DEBUG_MODE:                 ${DEBUG_MODE}
+      EXPORT_ENV:                 ${EXPORT_ENV}
       # -------------------------------------------------
 
     volumes:
@@ -105,7 +107,7 @@ services:
 
       # --------SET FOR DEVELOPMENT OR DEBUGGING---------
       # ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ ﹀ 
-      # NOTHING IS HERE NOW
+      # - ./gazebo/entrypoint.sh:/usr/local/bin/entrypoint.sh
       # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
 
     devices:
