@@ -53,3 +53,5 @@ ros_ws_clean
 GazeboDrone
 RawImage.png
 PX4-Autopilot-Beta/dev
+PX4-Autopilot-Beta/gazebo/dev
+PX4-Autopilot-Beta/pxt-autopilot/dev
