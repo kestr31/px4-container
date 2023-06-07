@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="SmallFlame">
+  <pose>0 0 0 0 0 0</pose>
+    <static>true</static>
+    <link name="link">
+      <particle_emitter name="emitter" type="ellipsoid">
+        <pose>0 0 0 0 -1.5708 0</pose>
+        <emitting>true</emitting>
+        <duration>10</duration>
+        <size>5 7 0.5</size>
+        <particle_size>2 2 2</particle_size>
+        <lifetime>2</lifetime>
+        <min_velocity>2</min_velocity>
+        <max_velocity>3</max_velocity>
+        <particle_scatter_ratio>0.1</particle_scatter_ratio>
+        <scale_rate>1</scale_rate>
+        <rate>50</rate>
+        <material>
+          <diffuse>0.7 0.7 0.7</diffuse>
+          <specular>1.0 1.0 1.0</specular>
+          <pbr>
+            <metal>
+              <albedo_map>materials/textures/flameparticle.png</albedo_map>
+            </metal>
+          </pbr>
+        </material>
+        <color_range_image>materials/textures/flamecolors.png</color_range_image>
+      </particle_emitter>
+    </link>
+  </model>
+</sdf>

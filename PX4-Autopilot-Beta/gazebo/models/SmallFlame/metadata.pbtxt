@@ -1,0 +1,17 @@
+model {
+  file: "model.sdf"
+  file_format {
+    version {
+      major: 1
+      minor: 0
+    }
+    name: "sdf"
+  }
+}
+name: "SmallFlame"
+description: "Small Flame implemented in Gazebo"
+authors {
+  name: "kestrel"
+  email: "kestrel@inha.edu"
+}
+
