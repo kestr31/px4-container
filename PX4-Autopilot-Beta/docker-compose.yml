@@ -22,6 +22,8 @@ services:
       SITL_POSE:                  ${SITL_POSE}
       DEBUG_MODE:                 ${DEBUG_MODE}
       EXPORT_ENV:                 ${EXPORT_ENV}
+      UXRCE_DDS_AG_IP_NOINT:      ${CONTAINER_ROS2_MAIN_ADDR}
+      UXRCE_DDS_CFG:              1000
       # -------------------------------------------------
 
     volumes:

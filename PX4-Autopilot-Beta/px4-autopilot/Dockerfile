@@ -248,13 +248,10 @@ RUN \
     && git clone https://github.com/zsh-users/zsh-autosuggestions.git \
         ${HOME}/.oh-my-zsh/plugins/zsh-autosuggestions \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-        ${HOME}/.oh-my-zsh/plugins/zsh-syntax-highlighting \
-    && sed -i "s/(git)/(git zsh-autosuggestions zsh-syntax-highlighting)/g" ${HOME}/.zshrc \
-    && echo "alias cat='batcat --paging=never'" >> ${HOME}/.zshrc
-
+        ${HOME}/.o/home/user/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix
 
 RUN \
-    git clone https://github.com/PX4/PX4-Autopilot.git -b v1.14.0-beta2 \
+    git clone https://github.com/PX4/PX4-Autopilot.git -b v1.14.0-rc1 \
     && git -C PX4-Autopilot submodule update --init --recursive
 
 RUN \
@@ -264,7 +261,8 @@ RUN \
     && sudo rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
 
 RUN \
-    make -C /home/user/PX4-Autopilot px4_sitl
+    sed -i s/"udp -h 127.0.0.1"/"udp -h \${UXRCE_DDS_AG_IP_NOINT}"/g PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS \
+    && make -C /home/user/PX4-Autopilot px4_sitl
 
 RUN \
     echo "source /opt/ros/humble/setup.zsh" >> ${HOME}/.zshrc
@@ -278,8 +276,6 @@ RUN \
     sudo make -C /home/user/Micro-XRCE-DDS-Agent/build install \
     && sudo ldconfig /usr/local/lib/ \
     && sudo rm -rf Micro-XRCE-DDS-Agent
-
-COPY PX4-Autopilot-Beta/scripts /home/user/scripts
 
 # git clone https://github.com/PX4/px4_ros_com.git ~/px4_ros/src/px4_ros_com
 # git -C ~/px4_ros/src/px4_ros_com reset --hard 0bcf68bcb635199adcd134e8932932054e863c0d
@@ -317,13 +313,7 @@ CMD [ "/usr/local/bin/entrypoint.sh" ]
 #    --user user \
 #    --privileged \
 #    --name sitl-px4 \
-#    kestr3l/px4:1.14.0-beta2-0.0.1-dev zsh
-
-# ------- RUN COMMAND (WSL2) -------
-# docker run -it --rm \
-#    -e DISPLAY=$DISPLAY \
-#    -e WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
-#    -e QT_NO_MITSHM=1 \
+#    kestr3l/px4:1.14.02886860802
 #    -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
 #    -e NVIDIA_DRIVER_CAPABILITIES=all \
 #    -e PULSE_SERVER=/mnt/wslg/PulseServer \
