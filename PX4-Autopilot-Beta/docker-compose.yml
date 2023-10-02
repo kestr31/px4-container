@@ -78,7 +78,7 @@ services:
       GZ_PARTITION:               ${GZ_PARTITION}
       PX4_GZ_MODELS:              ${PX4_GZ_MODELS}
       PX4_GZ_WORLDS:              ${PX4_GZ_WORLDS}
-      GZ_SIM_RESOURCE_PATH:       ${GZ_SIM_RESOURCE_PATH}
+      GZ_SIM_USER_RESOURCE_PATH:  ${GZ_SIM_USER_RESOURCE_PATH}
       DEBUG_MODE:                 ${DEBUG_MODE}
       EXPORT_ENV:                 ${EXPORT_ENV}
       # -------------------------------------------------
