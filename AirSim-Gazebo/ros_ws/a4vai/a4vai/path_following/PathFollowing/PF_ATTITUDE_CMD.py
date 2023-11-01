@@ -21,8 +21,8 @@ class PF_ATTITUDE_CMD():
     #.. NDO variables
         self.FbCmd      =   np.array([0., 0., -self.GCUParams.Mass * self.GCUParams.g0])
         self.z_NDO      =   np.zeros(3)
-        self.lx_NDO     =   2.
-        self.ly_NDO     =   2.
+        self.lx_NDO     =   1.
+        self.ly_NDO     =   1.
         self.lz_NDO     =   1.
 
         self.outNDO     =   np.zeros(3)

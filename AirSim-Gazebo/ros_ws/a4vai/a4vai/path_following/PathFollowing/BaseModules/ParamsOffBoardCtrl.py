@@ -94,7 +94,7 @@ class DataGCU():
 
     #.. params thrust
         # self.throttle_Hover     =   0.36
-        self.throttle_Hover     =   0.3
+        self.throttle_Hover     =   0.36
         self.g0                 =   9.81
         # self.Mass               =   2.265
         self.Mass               =   2.265
