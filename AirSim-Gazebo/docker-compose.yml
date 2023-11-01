@@ -18,7 +18,7 @@ services:
       # REBUILD: true
       # DEBUG_ENTRYPOINT: ${DEBUG_ENTRYPOINT}
       # REBUILD_RPKG: 1
-      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ 
+      # ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ ︿ G
     volumes:
       # -----------DEFAULT VALUE DO NOT MODIFY-----------
       - ${XDG_RUNTIME_DIR}:${XDG_RUNTIME_DIR}
@@ -70,8 +70,6 @@ services:
       PX4_SIM_HOST_ADDR:  ${CONTAINER_PX4_ADDR}
       PX4_SIM_MODEL:      ${PX4_SIM_MODEL}
       PX4_SIM_WORLD:      ${PX4_SIM_WORLD}
-      PX4_SIM_WOLRLD:     ${PX4_SIM_WORLD}
-      # PX4_SIM_WOLRLD: grass_dryden
       NO_PXH:             ${NO_PXH}
       # PX4_HOME_LAT:       ${PX4_HOME_LAT}
       # PX4_HOME_LON:       ${PX4_HOME_LON}
