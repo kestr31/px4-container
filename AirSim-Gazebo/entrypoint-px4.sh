@@ -124,8 +124,8 @@ else
 	echo "  / /| | / /_____/ / __/ __ \/ /  "
 	echo " / ___ |/ /_____/ /_/ / /_/ /_/   "
 	echo "/_/  |_/_/      \____/\____(_)    "
-	HEADLESS=${HEADLESS} make -C /root/PX4-Autopilot px4_sitl_rtps gazebo_${PX4_SIM_MODEL}__${PX4_SIM_WOLRLD} &
-	sleep 20s
+	HEADLESS=${HEADLESS} make -C /root/PX4-Autopilot px4_sitl_rtps gazebo_${PX4_SIM_MODEL}__${PX4_SIM_WORLD} &
+	sleep 5s
 
 	# GAZEBO STARTUP CHECKER: CONSISTED OF FOUR GATES
 	# Wait Until Gazebo Starts Up: Gate 1: Check .gazebo exists (Dir)
@@ -168,8 +168,8 @@ else
 	# This only works on default AirSim container IP (172.21.0.5)
 	# If IP Changed, You Must Rebuid GazeboDrone Package Manually
 	# Refer to 'stage_airsim' in corresponding Dockerfile
-	/root/AirSim/GazeboDrone/build/GazeboDrone &
-	sleep 15s
+	bash -c '/root/AirSim/GazeboDrone/build/GazeboDrone >> /dev/null &'
+	sleep 5s
 
 	echo "    _____ ____________       ______________    ____  ______ "
 	echo "   / ___//  _/_  __/ /      / ___/_  __/   |  / __ \/_  __/ "
@@ -178,23 +178,27 @@ else
 	echo " /____/___/ /_/ /_____/   /____//_/ /_/  |_/_/ |_| /_/      "
 fi
 
-
+echo "DEEP SAC MODULE RUN"
 ros2 run a4vai deep_sac_module &
 sleep 10s
 
-
+echo "PATH FOLLOWING GPR RUN"
 ros2 run a4vai path_following_gpr &
-sleep 10s
+# sleep 5s
 
+echo "PATH FOLLOWING GUID RUN"
 ros2 run a4vai path_following_guid &
-sleep 10s
+# sleep 5s
 
+echo "PATH FOLLOWING ATT RUN"
 ros2 run a4vai path_following_att &
-sleep 10s
+# sleep 5s
 
+echo "JBNU MODULE RUN"
 ros2 run a4vai JBNU_module &
 sleep 10s
 
+echo "RUN FINAL CONTROLLER"
 ros2 run a4vai controller &
 
 # # Keep container running. The Sleeping Beauty
